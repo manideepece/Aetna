@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.0.min.js"></script>
+    <script src="~/Scripts/i18n/grid.locale-en.js"></script>
+    <script src="~/Scripts/jquery.jqGrid.min.js"></script>
+    @Scripts.Render("~/bundles/bootstrap")
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
+    <style>
+        .container {
+            margin-left: 0px !important;
+            color: white !important;
+            font-family: 'Open Sans',calibri, Arial;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .navbar-nav {
+            margin-left: 150px !important;
+        }
+
+        .navbar-inverse {
+            background-color: #7D3F98;
+            color: white;
+        }
+
+            .navbar-inverse .navbar-nav > li > a{
+                color: white;
+            }
+
+        .ui-jqgrid tr.jqgrow td {
+            white-space: break-spaces;
+        }
+
+        .security-page {
+            border: 1px solid lightgray;
+            color: black;
+            width: 100% !important;
+        }
+
+        .ui-jqgrid-htable .ui-jqgrid-labels .ui-state-default {
+            background: #7D3F98;
+            color: white;
+            font-size: 15px;
+            font-family: 'Open Sans',calibri, Arial;
+            text-align: left !important;
+        }
+
+        .ui-jqgrid-htable .ui-jqgrid-labels {
+            height: 30px;
+        }
+
+        .ui-jqgrid .ui-jqgrid-htable th div {
+            height: 20px;
+        }
+
+        .ui-widget-content {
+            font-size: 15px;
+            font-family: 'Open Sans',calibri, Arial;
+        }
+
+        .ui-widget, .ui-jqgrid-view, .ui-jqgrid-hdiv, .ui-jqgrid-hbox {
+            width: 100% !important;
+        }
+
+        .ui-jqgrid-htable {
+            width: 80% !important;
+        }
+
+        .navtable {
+            background-color: lightgray;
+            /*width: 100% !important;*/
+        }
+
+        .ui-jqgrid-pager {
+            font-size: 15px !important;
+            font-family: 'Open Sans',calibri, Arial;
+            height: 30px !important;
+            color: black !important;
+        }
+
+        .ui-jqdialog {
+            width: 50% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <img src="~/Images/logo.png" style="height:50px" /><br/>
+                Nura Admin
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Region", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Subsegment", "About", "Home")</li>
+                    <li>@Html.ActionLink("Team Maintenance", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("User Team Mapping", "Contact", "Home")</li>
+                </ul>
+                <div style="text-align:right;padding-top:10px">
+                    Test User<br />N123456
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    
+    @RenderSection("scripts", required: false)
+    
+</body>
+</html>

@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_AetnaLayout.cshtml";
+}
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div class="security-page">
+    <div style="border-bottom: 1px solid lightgray;padding: 20px;">Team Maintenance</div>
+    <div style="padding:50px 20px;">
+        <table id="TeamMaintenancegrid"></table>
+        <div id="pager2"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#TeamMaintenancegrid").jqGrid({
+            url: '/Home/TeamMaintenanceData',
+            datatype: "json",
+            mtype: 'Get',
+            colNames: ['Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
+            colModel: [
+                { name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true } },
+                { name: 'TeamName', index: 'TeamName', width: 100, editable: true, editrules: { required: true } },
+                { name: 'CtrlCnt', index: 'CtrlCnt', width: 100, editable: true, editrules: { required: true } },
+                { name: 'Reports', index: 'Reports', width: 100, editable: true, editrules: { required: true } },
+                { name: 'Region', index: 'Region', width: 100, editable: true, editrules: { required: true } },
+                { name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true } }
+            ],
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: '#pager2',
+            recordtext: "{0} - {1} of {2} records",
+            pgtext: "{0}",
+            pgprev: "Prev",
+            pgnext: "Next",
+            recordpos: "left",
+            pagerpos: "right",
+            viewrecords: true,
+            sortorder: "desc",
+            jsonReader:
+            {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+                Id: "0"
+            },
+            autowidth: true
+        });
+        $("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
+            { edit: false, add: true, del: false, refresh: false, search: false }, {},
+            {
+                // add option  
+                zIndex: 100,
+                url: "/Home/CreateTeamMaintenance",
+                closeOnEscape: true,
+                closeAfterAdd: true,
+                afterComplete: function (response) {
+                    if (response.responseJSON) {
+                        if (response.responseJSON == "Saved Successfully") {
+                            alert("Saved Successfully");
+                        }
+                        else {
+                            var message = "";
+                            for (var i = 0; i < response.responseJSON.length; i++) {
+                                message += response.responseJSON[i];
+                                message += "\n";
+                            }
+                        }
+
+                    }
+                }
+            }
+        );
+        var $nav = $("#pager2").find(".navtable");
+        $nav.insertAfter(".ui-jqgrid-hdiv");
+        $(".ui-icon-plus").after("<span>Add new row</span>");
+    });
+
+</script>  
