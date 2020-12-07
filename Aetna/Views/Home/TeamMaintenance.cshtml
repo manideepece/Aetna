@@ -31,25 +31,22 @@
                 //    unformatter: function () { return ''; }
                 //},
                 { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false } },
-                {
-                    name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true },
-                    editoptions: {
-                        dataUrl: '/Home/GetAllReports',
-                        buildSelect: function (data) {
-                            var sel = '<select>';
-                            $.each(JSON.parse(data), function (i, accountCoding) {
-                                sel += '<option value="' + accountCoding.key + '">' + accountCoding.value + '</option>';
-                            });
-                            return sel + "</select>";
-                        }
-                    }
-                },
+                {name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true }},
                 { name: 'TeamName', index: 'TeamName', width: 100, editable: true, editrules: { required: true } },
                 { name: 'CtrlCnt', index: 'CtrlCnt', width: 100, editable: true, editrules: { required: true } },
                 {
                     name: 'Reports', index: 'Reports', width: 100, editable: true, editrules: { required: true }, edittype: "select",
                     editoptions: {
-                        value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
+                        dataUrl: '/Home/GetAllReports',
+                        buildSelect: function (data) {
+                            var sel = '<select>';
+                            sel += '<option value="">Select</option>'
+                            $.each(JSON.parse(data), function (i, accountCoding) {
+                                sel += '<option value="' + accountCoding.key + '">' + accountCoding.value + '</option>';
+                            });
+                            return sel + "</select>";
+                        },
+                        //value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
                         style: "width: 100%;",
                         multiple: true,
                         dataInit: function (elem) {
