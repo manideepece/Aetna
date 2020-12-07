@@ -18,16 +18,71 @@
     $(document).ready(function () {
         $("#TeamMaintenancegrid").jqGrid({
             url: '/Home/TeamMaintenanceData',
+            editurl: '/Home/EditTeamMaintenance',
             datatype: "json",
             mtype: 'Get',
-            colNames: ['Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
+            colNames: ['','Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
             colModel: [
-                { name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true } },
+                //{
+                //    name: '', width: 20,
+                //    formatter: function () {
+                //        return '<span class="ui-icon ui-icon-pencil"></span>';
+                //    },
+                //    unformatter: function () { return ''; }
+                //},
+                { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false } },
+                {
+                    name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true },
+                    editoptions: {
+                        dataUrl: '/Home/GetAllReports',
+                        buildSelect: function (data) {
+                            var sel = '<select>';
+                            $.each(JSON.parse(data), function (i, accountCoding) {
+                                sel += '<option value="' + accountCoding.key + '">' + accountCoding.value + '</option>';
+                            });
+                            return sel + "</select>";
+                        }
+                    }
+                },
                 { name: 'TeamName', index: 'TeamName', width: 100, editable: true, editrules: { required: true } },
                 { name: 'CtrlCnt', index: 'CtrlCnt', width: 100, editable: true, editrules: { required: true } },
-                { name: 'Reports', index: 'Reports', width: 100, editable: true, editrules: { required: true } },
-                { name: 'Region', index: 'Region', width: 100, editable: true, editrules: { required: true } },
-                { name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true } }
+                {
+                    name: 'Reports', index: 'Reports', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    editoptions: {
+                        value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
+                        style: "width: 100%;",
+                        multiple: true,
+                        dataInit: function (elem) {
+                            console.log(elem.id)
+                            setTimeout(function () {
+                                $("#" + elem.id).multiselect({
+                                    minWidth: 100, //'auto',
+                                    height: "auto",
+                                    selectedList: 2,
+                                    checkAllText: "all",
+                                    uncheckAllText: "no",
+                                    noneSelectedText: "Any",
+                                    open: function () {
+                                        var $menu = $(".ui-multiselect-menu:visible");
+                                        $menu.width("auto");
+                                        return;
+                                    }
+                                });
+                            }, 50);
+                        },
+                    }},
+                {
+                    name: 'Region', index: 'Region', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    editoptions: {
+                        value: "Select:Select;Mid America:Mid America;Northeast:Northeast;Other Region:Other Region;Southeast:Southeast;West:West",
+                        style: "width: 100px;",
+                    }},
+                {
+                    name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    editoptions: {
+                        value: "Select:Select;AAM:AAM;Intl Expat:Intl Expat",
+                        style: "width: 100px;"
+                    }}
             ],
             rowNum: 10,
             rowList: [10, 20, 30],
@@ -39,6 +94,7 @@
             recordpos: "left",
             pagerpos: "right",
             viewrecords: true,
+            onSelectRow: editRow,
             sortorder: "desc",
             jsonReader:
             {
@@ -52,7 +108,10 @@
             autowidth: true
         });
         $("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
-            { edit: false, add: true, del: false, refresh: false, search: false }, {},
+            { edit: true, add: true, del: false, refresh: false, search: false },
+            {
+                
+            },
             {
                 // add option  
                 zIndex: 100,
@@ -76,6 +135,17 @@
                 }
             }
         );
+        var lastSelection;
+
+        function editRow(id) {
+            if (id && id !== lastSelection) {
+                var grid = $("#TeamMaintenancegrid");
+                grid.jqGrid('restoreRow', lastSelection);
+                grid.jqGrid('editRow', id, { keys: true });
+                lastSelection = id;
+            }
+        }
+
         var $nav = $("#pager2").find(".navtable");
         $nav.insertAfter(".ui-jqgrid-hdiv");
         $(".ui-icon-plus").after("<span>Add new row</span>");

@@ -60,6 +60,14 @@ namespace Aetna.Controllers
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetAllReports()
+        {
+            var list = new List<object>() { new { key = "Medical PNC with Rx Rebates", value = "Medical PNC with Rx Rebates" } , 
+                                            new { key = "Medical PNC without Rx Rebates", value = "Medical PNC without Rx Rebates"}, 
+                                            new { key = "NA", value = "NA" }};
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult CreateTeamMaintenance(TeamMaintenance teamMaintenance)
         {
@@ -71,6 +79,43 @@ namespace Aetna.Controllers
                     using (var db = new AetnaContext())
                     {
                         db.TeamMaintenances.Add(teamMaintenance);
+                        db.SaveChanges();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult EditTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            StringBuilder msg = new StringBuilder();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    using (var db = new AetnaContext())
+                    {
+                        var record = db.TeamMaintenances.Where(x => x.TeamMaintenanceID == teamMaintenance.TeamMaintenanceID).FirstOrDefault();
+                        record.TeamCode = teamMaintenance.TeamCode;
+                        record.TeamName = teamMaintenance.TeamName;
+                        record.CtrlCnt = teamMaintenance.CtrlCnt;
+                        record.Region = teamMaintenance.Region;
+                        record.Reports = teamMaintenance.Reports;
+                        record.Subsegment = teamMaintenance.Subsegment;
                         db.SaveChanges();
                         return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
                     }
