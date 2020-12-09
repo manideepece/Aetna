@@ -6,16 +6,14 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @*@Styles.Render("~/Content/css")*@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/jquery.multiselect.css" rel="stylesheet" />
-    @*<link href="~/Content/bootstrap-multiselect.css" rel="stylesheet" />*@
     <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
     <link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
+    <link href="~/Content/jquery.multiselect.css" rel="stylesheet" />
     @Scripts.Render("~/bundles/modernizr")
 
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery-1.7.2.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
-    @*<script src="~/Scripts/bootstrap-multiselect.js"></script>*@
-    <script src="~/Scripts/jquery-ui-1.10.0.min.js"></script>
+    <script src="~/Scripts/jquery-ui.min.js"></script>
     <script src="~/Scripts/i18n/grid.locale-en.js"></script>
     <script src="~/Scripts/jquery.jqGrid.min.js"></script>
     <script src="~/Scripts/jquery.multiselect.js"></script>
@@ -76,6 +74,10 @@
 
         .ui-widget, .ui-jqgrid-view, .ui-jqgrid-hdiv, .ui-jqgrid-hbox {
             width: 100% !important;
+        }
+
+        .ui-multiselect-menu.ui-widget{
+            width: auto !important;
         }
 
         .ui-jqgrid-htable {

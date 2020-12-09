@@ -53,14 +53,20 @@
                         dataInit: function (elem) {
                             console.log(elem.id)
                             setTimeout(function () {
-                                $("#" + elem.id).multiselect({
-                                    includeSelectAllOption: true,
+                                $(elem).multiselect({
+                                    minWidth: 100, //'auto',
+                                    height: "auto",
                                     selectedList: 2,
                                     buttonWidth: "80%",
-                                    classes: "selectBtn ui-corner-all ui-multiselect ui-state-default multiselect-ui form-control",
+                                    open: function () {
+                                        var $menu = $(".ui-multiselect-menu:visible");
+                                        $menu.width("auto");
+                                        return;
+                                    }
                                 });
                             }, 50);
                         },
+                        stype: 'select',
                     }
                 },
                 {
