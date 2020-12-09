@@ -1,8 +1,12 @@
 ﻿using Aetna.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -34,12 +38,24 @@ namespace Aetna.Controllers
             return View();
         }
 
-        public ActionResult TeamMaintenanceData(int page, int rows)
+        public async Task<ActionResult> TeamMaintenanceData(int page, int rows)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
-            var context = new AetnaContext();
-            var teamMaintenanceRecords = context.TeamMaintenances.ToList();
+            //var context = new AetnaContext();
+            //var teamMaintenanceRecords = context.TeamMaintenances.ToList();
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetTeamMaintenanceData").Result;  // Blocking call!
+            var teamMaintenanceRecords = new List<TeamMaintenance>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                teamMaintenanceRecords = JsonConvert.DeserializeObject<List<TeamMaintenance>>(output);
+            }
             int totalRecords = teamMaintenanceRecords.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
             teamMaintenanceRecords = teamMaintenanceRecords.Skip(pageIndex * pageSize).Take(pageSize).ToList();
