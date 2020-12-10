@@ -18,20 +18,12 @@
     $(document).ready(function () {
         $("#TeamMaintenancegrid").jqGrid({
             url: '/Home/TeamMaintenanceData',
-            editurl: '/Home/EditTeamMaintenance',
+            editurl: '/Home/CreateTeamMaintenance',
             datatype: "json",
             mtype: 'Get',
-            colNames: ['', '', 'Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
+            colNames: ['Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
             colModel: [
-                {
-                    name: '', width: 20,
-                    formatter: function () {
-                        return '<span class="ui-icon ui-icon-save"></span>';
-                    },
-                    unformatter: function () { return ''; },
-                    editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: true }
-                },
-                { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false } },
+                //{ name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
                 { name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true } },
                 { name: 'TeamName', index: 'TeamName', width: 100, editable: true, editrules: { required: true } },
                 { name: 'CtrlCnt', index: 'CtrlCnt', width: 100, editable: true, editrules: { required: true } },
@@ -84,6 +76,7 @@
                     }
                 }
             ],
+            prmNames: { id: "TeamMaintenanceID" },
             rowNum: 10,
             rowList: [10, 20, 30],
             pager: '#pager2',
@@ -96,6 +89,9 @@
             viewrecords: true,
             //onSelectRow: editRow,
             sortorder: "desc",
+            cellEdit: true,
+            cellsubmit: 'remote',
+            cellurl: '/Home/EditCellTeamMaintenance',
             jsonReader:
             {
                 root: "rows",
@@ -103,11 +99,11 @@
                 total: "total",
                 records: "records",
                 repeatitems: false,
-                Id: "0"
+                Id: "TeamMaintenanceID"
             },
             autowidth: true
         })
-        .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
         //$("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
         //    { edit: false, add: true, del: false, refresh: false, search: false },
         //    {
@@ -138,7 +134,7 @@
         //);
         $("#TeamMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
-                edit: true,
+                edit: false,
                 edittext: "Edit",
                 add: true,
                 addtext: "Add",
@@ -148,13 +144,21 @@
                 save: true,
                 savetext: "Save",
                 refresh: false,
-                editParams: {
-                    keys: true,
-                    url: "/Home/CreateTeamMaintenance",
-                },
+                //editParams: {
+                //    keys: true,
+                //    url: "/Home/CreateTeamMaintenance",
+                //},
                 addParams: {
-                    keys: true,
-                    url: "/Home/EditTeamMaintenance",
+                    addRowParams: {
+                        keys: true,
+                        url: "/Home/CreateTeamMaintenance",
+                        aftersavefunc: function () {
+                            var $this = $(this); // grid
+                            setTimeout(function () {
+                                $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
+                            }, 50);
+                        }
+                    }
                 },
                 onSelectRow: editRow,
                 beforeSaveRow: function (o, rowid) {

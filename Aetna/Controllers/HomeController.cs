@@ -85,9 +85,8 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public JsonResult CreateTeamMaintenance(TeamMaintenance teamMaintenance)
+        public JsonResult CreateTeamMaintenance([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
         {
-            StringBuilder msg = new StringBuilder();
             try
             {
                 if (ModelState.IsValid)
@@ -132,6 +131,59 @@ namespace Aetna.Controllers
                         record.Region = teamMaintenance.Region;
                         record.Reports = teamMaintenance.Reports;
                         record.Subsegment = teamMaintenance.Subsegment;
+                        db.SaveChanges();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult EditCellTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    using (var db = new AetnaContext())
+                    {
+                        var record = db.TeamMaintenances.Where(x => x.TeamMaintenanceID == teamMaintenance.TeamMaintenanceID).FirstOrDefault();
+                        if(teamMaintenance.TeamCode != null)
+                        {
+                            record.TeamCode = teamMaintenance.TeamCode;
+                        }
+                        else if(teamMaintenance.TeamName != null)
+                        {
+                            record.TeamName = teamMaintenance.TeamName;
+                        }
+                        else if(teamMaintenance.CtrlCnt != null)
+                        {
+                            record.CtrlCnt = teamMaintenance.CtrlCnt;
+                        }
+                        else if(teamMaintenance.Region != null)
+                        {
+                            record.Region = teamMaintenance.Region;
+                        }
+                        else if(teamMaintenance.Reports != null)
+                        {
+                            record.Reports = teamMaintenance.Reports;
+                        }
+                        else if(teamMaintenance.Subsegment != null)
+                        {
+                            record.Subsegment = teamMaintenance.Subsegment;
+                        }    
                         db.SaveChanges();
                         return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
                     }
