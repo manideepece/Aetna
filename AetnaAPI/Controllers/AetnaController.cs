@@ -18,6 +18,35 @@ namespace AetnaAPI.Controllers
             return output;
         }
 
+        [HttpPost]
+        public bool AddTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            var repository = new DataAccess();
+            var output = repository.AddTeamMaintenance(teamMaintenance);
+            return output;
+        }
+
+        public List<ReportModel> GetReports()
+        {
+            var repository = new DataAccess();
+            var output = repository.GetReports();
+            return output;
+        }
+
+        public List<RegionModel> GetRegions()
+        {
+            var repository = new DataAccess();
+            var output = repository.GetRegions();
+            return output;
+        }
+
+        public List<SubsegmentModel> GetSubsegments()
+        {
+            var repository = new DataAccess();
+            var output = repository.GetSubsegments();
+            return output;
+        }
+
 
         // POST api/values
         public void Post([FromBody] string value)

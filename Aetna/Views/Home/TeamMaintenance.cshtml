@@ -21,21 +21,22 @@
             editurl: '/Home/CreateTeamMaintenance',
             datatype: "json",
             mtype: 'Get',
+            height: '400px',
             colNames: ['Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
             colModel: [
                 //{ name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'TeamCode', index: 'TeamCode', width: 100, editable: true, editrules: { required: true } },
-                { name: 'TeamName', index: 'TeamName', width: 100, editable: true, editrules: { required: true } },
-                { name: 'CtrlCnt', index: 'CtrlCnt', width: 100, editable: true, editrules: { required: true } },
+                { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true } },
+                { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true } },
+                { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true } },
                 {
-                    name: 'Reports', index: 'Reports', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    name: 'Reports', index: 'Reports', width: 50, editable: true, editrules: { required: true }, edittype: "select",
                     editoptions: {
                         dataUrl: '/Home/GetAllReports',
                         buildSelect: function (data) {
                             var sel = '<select multiple="multiple">';
                             sel += '<option value="">Select</option>'
                             $.each(JSON.parse(data), function (i, accountCoding) {
-                                sel += '<option value="' + accountCoding.key + '">' + accountCoding.value + '</option>';
+                                sel += '<option value="' + accountCoding.REPORT_CD + '">' + accountCoding.REPORT_DESC + '</option>';
                             });
                             return sel + "</select>";
                         },
@@ -47,7 +48,6 @@
                             setTimeout(function () {
                                 $(elem).multiselect({
                                     minWidth: 100, //'auto',
-                                    height: "auto",
                                     selectedList: 2,
                                     buttonWidth: "80%",
                                     open: function () {
@@ -62,17 +62,78 @@
                     }
                 },
                 {
-                    name: 'Region', index: 'Region', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    name: 'Region', index: 'Region', width: 30, editable: true, editrules: { required: true }, edittype: "select",
+                    //editoptions: {
+                    //    value: "Select:Select;Mid America:Mid America;Northeast:Northeast;Other Region:Other Region;Southeast:Southeast;West:West",
+                    //    style: "width: 100px;",
+                    //}
                     editoptions: {
-                        value: "Select:Select;Mid America:Mid America;Northeast:Northeast;Other Region:Other Region;Southeast:Southeast;West:West",
-                        style: "width: 100px;",
+                        dataUrl: '/Home/GetAllRegions',
+                        buildSelect: function (data) {
+                            var sel = '<select multiple="multiple">';
+                            sel += '<option value="">Select</option>'
+                            $.each(JSON.parse(data), function (i, accountCoding) {
+                                sel += '<option value="' + accountCoding.REGION_ID + '">' + accountCoding.REGION_DESCR + '</option>';
+                            });
+                            return sel + "</select>";
+                        },
+                        //value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
+                        style: "width: 100%;",
+                        multiple: true,
+                        dataInit: function (elem) {
+                            console.log(elem.id)
+                            setTimeout(function () {
+                                $(elem).multiselect({
+                                    minWidth: 100, //'auto',
+                                    selectedList: 2,
+                                    buttonWidth: "80%",
+                                    open: function () {
+                                        var $menu = $(".ui-multiselect-menu:visible");
+                                        $menu.width("auto");
+                                        return;
+                                    }
+                                });
+                            }, 50);
+                        },
+                        stype: 'select',
                     }
                 },
                 {
                     name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    //editoptions: {
+                    //    value: "Select:Select;AAM:AAM;Intl Expat:Intl Expat",
+                    //    style: "width: 100px;"
+                    //}
                     editoptions: {
-                        value: "Select:Select;AAM:AAM;Intl Expat:Intl Expat",
-                        style: "width: 100px;"
+                        dataUrl: '/Home/GetAllSubsegments',
+                        buildSelect: function (data) {
+                            var sel = '<select multiple="multiple">';
+                            sel += '<option value="">Select</option>'
+                            $.each(JSON.parse(data), function (i, accountCoding) {
+                                sel += '<option value="' + accountCoding.SUB_SEGMENT_ID + '">' + accountCoding.SUB_SEGMENT_DESCR + '</option>';
+                            });
+                            return sel + "</select>";
+                        },
+                        //value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
+                        style: "width: 100%;",
+                        multiple: true,
+                        dataInit: function (elem) {
+                            console.log(elem.id)
+                            setTimeout(function () {
+                                $(elem).multiselect({
+                                    minWidth: 100, //'auto',
+                                    enableFiltering: true,
+                                    selectedList: 2,
+                                    buttonWidth: "80%",
+                                    open: function () {
+                                        var $menu = $(".ui-multiselect-menu:visible");
+                                        $menu.width("auto");
+                                        return;
+                                    }
+                                });
+                            }, 50);
+                        },
+                        stype: 'select',
                     }
                 }
             ],

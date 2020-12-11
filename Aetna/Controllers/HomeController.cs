@@ -76,16 +76,102 @@ namespace Aetna.Controllers
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetAllReports()
+        public async Task<ActionResult> GetAllReports()
         {
-            var list = new List<object>() { new { key = "Medical PNC with Rx Rebates", value = "Medical PNC with Rx Rebates" } , 
-                                            new { key = "Medical PNC without Rx Rebates", value = "Medical PNC without Rx Rebates"}, 
-                                            new { key = "NA", value = "NA" }};
-            return Json(list, JsonRequestBehavior.AllowGet);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetReports").Result;  // Blocking call!
+            var reports = new List<Report>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                reports = JsonConvert.DeserializeObject<List<Report>>(output);
+            }
+            //var list = new List<object>() { new { key = "Medical PNC with Rx Rebates", value = "Medical PNC with Rx Rebates" } , 
+            //                                new { key = "Medical PNC without Rx Rebates", value = "Medical PNC without Rx Rebates"}, 
+            //                                new { key = "NA", value = "NA" }};
+            return Json(reports, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> GetAllRegions()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetRegions").Result;  // Blocking call!
+            var reports = new List<Region>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                reports = JsonConvert.DeserializeObject<List<Region>>(output);
+            }
+            return Json(reports, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> GetAllSubsegments()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetSubsegments").Result;  // Blocking call!
+            var reports = new List<Subsegment>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                reports = JsonConvert.DeserializeObject<List<Subsegment>>(output);
+            }
+            return Json(reports, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public JsonResult CreateTeamMaintenance([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
+        public async Task<ActionResult> CreateTeamMaintenance([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(teamMaintenance);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/AddTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult CreateTeamMaintenanceUsingContext([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
         {
             try
             {
