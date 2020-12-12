@@ -77,6 +77,34 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public bool EditTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_Team_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var teamCodeparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
+                    var teamDescriptionParam = new SqlParameter("@column", teamMaintenance.Column);
+                    var ctrlCountParam = new SqlParameter("@value", teamMaintenance.Value);
+                    cmd.Parameters.Add(teamCodeparam);
+                    cmd.Parameters.Add(teamDescriptionParam);
+                    cmd.Parameters.Add(ctrlCountParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public List<ReportModel> GetReports()
         {
             List<ReportModel> output = new List<ReportModel>();

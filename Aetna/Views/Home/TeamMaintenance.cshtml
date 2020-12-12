@@ -1,6 +1,7 @@
 ﻿@{
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_AetnaLayout.cshtml";
+    var reports = ViewBag.Reports;
 }
 
 <div>&nbsp;</div>
@@ -22,18 +23,18 @@
             datatype: "json",
             mtype: 'Get',
             height: '400px',
-            colNames: ['Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
+            colNames: ['', 'Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
             colModel: [
-                //{ name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
+                { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
                 { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true } },
                 { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true } },
                 { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true } },
                 {
-                    name: 'Reports', index: 'Reports', width: 50, editable: true, editrules: { required: true }, edittype: "select",
+                    name: 'Reports', index: 'Reports', width: 50, editable: true, edittype: "select",
                     editoptions: {
                         dataUrl: '/Home/GetAllReports',
                         buildSelect: function (data) {
-                            var sel = '<select multiple="multiple">';
+                            var sel = '<select>';
                             sel += '<option value="">Select</option>'
                             $.each(JSON.parse(data), function (i, accountCoding) {
                                 sel += '<option value="' + accountCoding.REPORT_CD + '">' + accountCoding.REPORT_DESC + '</option>';
@@ -41,10 +42,10 @@
                             return sel + "</select>";
                         },
                         //value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
-                        style: "width: 100%;",
                         multiple: true,
+                        style: "width: 100%;",
                         dataInit: function (elem) {
-                            console.log(elem.id)
+                            console.log(elem)
                             setTimeout(function () {
                                 $(elem).multiselect({
                                     minWidth: 100, //'auto',
@@ -62,7 +63,7 @@
                     }
                 },
                 {
-                    name: 'Region', index: 'Region', width: 30, editable: true, editrules: { required: true }, edittype: "select",
+                    name: 'Region', index: 'Region', width: 30, editable: true, edittype: "select",
                     //editoptions: {
                     //    value: "Select:Select;Mid America:Mid America;Northeast:Northeast;Other Region:Other Region;Southeast:Southeast;West:West",
                     //    style: "width: 100px;",
@@ -70,7 +71,7 @@
                     editoptions: {
                         dataUrl: '/Home/GetAllRegions',
                         buildSelect: function (data) {
-                            var sel = '<select multiple="multiple">';
+                            var sel = '<select>';
                             sel += '<option value="">Select</option>'
                             $.each(JSON.parse(data), function (i, accountCoding) {
                                 sel += '<option value="' + accountCoding.REGION_ID + '">' + accountCoding.REGION_DESCR + '</option>';
@@ -94,12 +95,13 @@
                                     }
                                 });
                             }, 50);
+                            return;
                         },
                         stype: 'select',
                     }
                 },
                 {
-                    name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true }, edittype: "select",
+                    name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, edittype: "select",
                     //editoptions: {
                     //    value: "Select:Select;AAM:AAM;Intl Expat:Intl Expat",
                     //    style: "width: 100px;"
@@ -107,7 +109,7 @@
                     editoptions: {
                         dataUrl: '/Home/GetAllSubsegments',
                         buildSelect: function (data) {
-                            var sel = '<select multiple="multiple">';
+                            var sel = '<select>';
                             sel += '<option value="">Select</option>'
                             $.each(JSON.parse(data), function (i, accountCoding) {
                                 sel += '<option value="' + accountCoding.SUB_SEGMENT_ID + '">' + accountCoding.SUB_SEGMENT_DESCR + '</option>';
@@ -122,7 +124,6 @@
                             setTimeout(function () {
                                 $(elem).multiselect({
                                     minWidth: 100, //'auto',
-                                    enableFiltering: true,
                                     selectedList: 2,
                                     buttonWidth: "80%",
                                     open: function () {
@@ -141,6 +142,7 @@
             rowNum: 10,
             rowList: [10, 20, 30],
             pager: '#pager2',
+            ajaxSelectOptions: { cache: false },
             recordtext: "{0} - {1} of {2} records",
             pgtext: "{0} of {1}",
             pgprev: "Prev",
@@ -153,6 +155,9 @@
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellTeamMaintenance',
+            //afterEditCell: function (rowid, celname, value, iRow, iCol) {
+            //    if (cellname == "Reports") { return value.toString() }
+            //},
             jsonReader:
             {
                 root: "rows",
@@ -168,10 +173,10 @@
         //$("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
         //    { edit: false, add: true, del: false, refresh: false, search: false },
         //    {
-                
+
         //    },
         //    {
-        //        // add option  
+        //        // add option
         //        zIndex: 100,
         //        url: "/Home/CreateTeamMaintenance",
         //        closeOnEscape: true,
@@ -221,20 +226,20 @@
                         }
                     }
                 },
-                onSelectRow: editRow,
-                beforeSaveRow: function (o, rowid) {
-                    // this is where you should save the data
-                    // Do validation and save the data here
-                    // Note, the 'beforeSaveRow' is undocumented, but it gets invoked before jqGrid calls its own SaveRow method.       
-                    // Get data by rowid and save it to DB and then 
+                //onSelectRow: editRow,
+                //beforeSaveRow: function (o, rowid) {
+                //    // this is where you should save the data
+                //    // Do validation and save the data here
+                //    // Note, the 'beforeSaveRow' is undocumented, but it gets invoked before jqGrid calls its own SaveRow method.
+                //    // Get data by rowid and save it to DB and then
 
-                    grid.saveRow(rowid, false);
-                    return false;// To avoid jqgrid from invoking its own save again
-                },
-                aftersavefunc: function (rowid) {
-                    // this fired is after saving
-                    var rowData = $this.jqGrid("getRowData", rowid);
-                }
+                //    grid.saveRow(rowid, false);
+                //    return false;// To avoid jqgrid from invoking its own save again
+                //},
+                //aftersavefunc: function (rowid) {
+                //    // this fired is after saving
+                //    var rowData = $this.jqGrid("getRowData", rowid);
+                //}
             }
         );
         var lastSelection;

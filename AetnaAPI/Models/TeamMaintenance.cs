@@ -14,5 +14,8 @@ namespace AetnaAPI.Models
         public string Reports { get; set; }
         public string Region { get; set; }
         public string Subsegment { get; set; }
+
+        public string Column { get; set; }
+        public string Value { get; set; }
     }
 }

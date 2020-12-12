@@ -26,6 +26,14 @@ namespace AetnaAPI.Controllers
             return output;
         }
 
+        [HttpPost]
+        public bool EditTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            var repository = new DataAccess();
+            var output = repository.EditTeamMaintenance(teamMaintenance);
+            return output;
+        }
+
         public List<ReportModel> GetReports()
         {
             var repository = new DataAccess();

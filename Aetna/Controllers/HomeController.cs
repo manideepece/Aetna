@@ -171,6 +171,78 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> EditCellTeamMaintenance(TeamMaintenanceEdit teamMaintenance)
+        {
+            try
+            {
+                var tm = new TeamMaintenance();
+                tm.TeamMaintenanceID = teamMaintenance.TeamMaintenanceID;
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    if (teamMaintenance.TeamCode != null)
+                    {
+                        tm.Column = "TeamCode";
+                        tm.Value = teamMaintenance.TeamCode;
+                    }
+                    else if (teamMaintenance.TeamName != null)
+                    {
+                        tm.Column = "TeamName";
+                        tm.Value = teamMaintenance.TeamName;
+                    }
+                    else if (teamMaintenance.CtrlCnt != null)
+                    {
+                        tm.Column = "CtrlCnt";
+                        tm.Value = teamMaintenance.CtrlCnt;
+                    }
+                    else if (teamMaintenance.Region != null)
+                    {
+                        tm.Column = "Region";
+                        tm.Value = string.Join(",", teamMaintenance.Region);
+                    }
+                    else if (teamMaintenance.Reports != null)
+                    {
+                        tm.Column = "Reports";
+                        tm.Value = string.Join(",", teamMaintenance.Reports);
+                    }
+                    else if (teamMaintenance.Subsegment != null)
+                    {
+                        tm.Column = "Subsegment";
+                        tm.Value = string.Join(",", teamMaintenance.Subsegment);
+                    }
+                    var myContent = JsonConvert.SerializeObject(tm);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/EditTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
         public JsonResult CreateTeamMaintenanceUsingContext([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
         {
             try
@@ -237,7 +309,7 @@ namespace Aetna.Controllers
             }
         }
 
-        public JsonResult EditCellTeamMaintenance(TeamMaintenance teamMaintenance)
+        public JsonResult EditCellTeamMaintenanceUsingContext(TeamMaintenance teamMaintenance)
         {
             try
             {
