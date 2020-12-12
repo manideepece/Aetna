@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "User Team Mapping";
+    Layout = "~/Views/Shared/_AetnaLayout.cshtml";
+}
+
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div class="security-page">
+    <div style="border-bottom: 1px solid lightgray;padding: 20px;">User Team Mapping</div>
+    <div style="padding:50px 20px;">
+        <table id="RegionMaintenancegrid"></table>
+        <div id="pager2"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#RegionMaintenancegrid").jqGrid({
+            url: '/Home/RegionMaintenanceData',
+            editurl: '/Home/CreateRegionMaintenance',
+            datatype: "json",
+            mtype: 'Get',
+            height: '200px',
+            colNames: ['', 'Region Code', 'Region Description', 'Updated by', 'Updated Date'],
+            colModel: [
+                { name: 'REGION_ID', key: true, index: 'REGION_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
+                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true } },
+                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true } },
+                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false },
+                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date" },
+            ],
+            prmNames: { id: "REGION_ID" },
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: '#pager2',
+            ajaxSelectOptions: { cache: false },
+            recordtext: "{0} - {1} of {2} records",
+            pgtext: "{0} of {1}",
+            pgprev: "Prev",
+            pgnext: "Next",
+            viewrecords: true,
+            sortorder: "desc",
+            cellEdit: true,
+            cellsubmit: 'remote',
+            cellurl: '/Home/EditCellRegionMaintenance',
+            jsonReader:
+            {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+                Id: "REGION_ID"
+            },
+            autowidth: true
+        })
+        .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+        $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
+            {
+                edit: false,
+                edittext: "Edit",
+                add: true,
+                addtext: "Add",
+                del: false,
+                cancel: true,
+                canceltext: "cancel",
+                save: true,
+                savetext: "Save",
+                refresh: false,
+                addParams: {
+                    addRowParams: {
+                        keys: true,
+                        url: "/Home/CreateRegionMaintenance",
+                        aftersavefunc: function () {
+                            var $this = $(this); // grid
+                            setTimeout(function () {
+                                $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
+                            }, 50);
+                        }
+                    }
+                }
+            }
+        );
+        var lastSelection;
+
+        function editRow(id) {
+            if (id && id !== lastSelection) {
+                var grid = $("#RegionMaintenancegrid");
+                grid.jqGrid('restoreRow', lastSelection);
+                grid.jqGrid('editRow', id, { keys: true });
+                lastSelection = id;
+            }
+        }
+    });
+
+</script>  

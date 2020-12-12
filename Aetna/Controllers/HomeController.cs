@@ -76,6 +76,75 @@ namespace Aetna.Controllers
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult RegionMaintenance()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> RegionMaintenanceData(int page, int rows)
+        {
+            int pageIndex = Convert.ToInt32(page) - 1;
+            int pageSize = rows;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");  
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));  
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetRegions").Result;  // Blocking call!
+            var regions = new List<Region>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                regions = JsonConvert.DeserializeObject<List<Region>>(output);
+            }
+            int totalRecords = regions.Count();
+            var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
+            regions = regions.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            var jsonData = new
+            {
+                total = totalPages,
+                page = page,
+                records = totalRecords,
+                rows = regions
+            };
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult SubsegmentMaintenance()
+        {
+            return View();
+        }
+
+        public ActionResult UserTeamMapping()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> SubsegmentMaintenanceData(int page, int rows)
+        {
+            int pageIndex = Convert.ToInt32(page) - 1;
+            int pageSize = rows;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetSubsegments").Result;  // Blocking call!
+            var subsegments = new List<Subsegment>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                subsegments = JsonConvert.DeserializeObject<List<Subsegment>>(output);
+            }
+            int totalRecords = subsegments.Count();
+            var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
+            subsegments = subsegments.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            var jsonData = new
+            {
+                total = totalPages,
+                page = page,
+                records = totalRecords,
+                rows = subsegments
+            };
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
+        }
+
         public async Task<ActionResult> GetAllReports()
         {
             HttpClient client = new HttpClient();
@@ -130,6 +199,23 @@ namespace Aetna.Controllers
             return Json(reports, JsonRequestBehavior.AllowGet);
         }
 
+        public async Task<ActionResult> GetAllTeams()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetTeams").Result;  // Blocking call!
+            var reports = new List<Team>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                reports = JsonConvert.DeserializeObject<List<Team>>(output);
+            }
+            return Json(reports, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateTeamMaintenance([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)
         {
@@ -144,6 +230,46 @@ namespace Aetna.Controllers
 
                     var myContent = JsonConvert.SerializeObject(teamMaintenance);
                     HttpResponseMessage response = client.PostAsync("api/aetna/AddTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateRegionMaintenance([Bind(Exclude = "REGION_ID")] Region region)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(region);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/AddRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
@@ -216,6 +342,146 @@ namespace Aetna.Controllers
                     }
                     var myContent = JsonConvert.SerializeObject(tm);
                     HttpResponseMessage response = client.PostAsync("api/aetna/EditTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditCellRegionMaintenance(Region region)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    if (region.REGION_CD != null)
+                    {
+                        region.Column = "REGION_CD";
+                        region.Value = region.REGION_CD;
+                    }
+                    else if (region.REGION_DESCR != null)
+                    {
+                        region.Column = "REGION_DESCR";
+                        region.Value = region.REGION_DESCR;
+                    }
+                    var myContent = JsonConvert.SerializeObject(region);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/EditRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateSubsegmentMaintenance([Bind(Exclude = "SUB_SEGMENT_ID")] Subsegment subsegment)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(subsegment);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/AddSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditCellSubsegmentMaintenance(Subsegment subsegment)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    if (subsegment.SUB_SEGMENT_CD != null)
+                    {
+                        subsegment.Column = "SUB_SEGMENT_CD";
+                        subsegment.Value = subsegment.SUB_SEGMENT_CD;
+                    }
+                    else if (subsegment.SUB_SEGMENT_DESCR != null)
+                    {
+                        subsegment.Column = "SUB_SEGMENT_DESCR";
+                        subsegment.Value = subsegment.SUB_SEGMENT_DESCR;
+                    }
+                    var myContent = JsonConvert.SerializeObject(subsegment);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/EditSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();

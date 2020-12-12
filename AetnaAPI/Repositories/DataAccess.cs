@@ -89,12 +89,120 @@ namespace AetnaAPI.Repositories
                     cmd.Connection = con;
                     con.Open();
 
-                    var teamCodeparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
-                    var teamDescriptionParam = new SqlParameter("@column", teamMaintenance.Column);
-                    var ctrlCountParam = new SqlParameter("@value", teamMaintenance.Value);
-                    cmd.Parameters.Add(teamCodeparam);
-                    cmd.Parameters.Add(teamDescriptionParam);
-                    cmd.Parameters.Add(ctrlCountParam);
+                    var teamIdparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
+                    var columnParam = new SqlParameter("@column", teamMaintenance.Column);
+                    var valueParam = new SqlParameter("@value", teamMaintenance.Value);
+                    cmd.Parameters.Add(teamIdparam);
+                    cmd.Parameters.Add(columnParam);
+                    cmd.Parameters.Add(valueParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool AddRegionMaintenance(RegionModel region)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Add_Region_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var regionCodeparam = new SqlParameter("@regionCode", region.REGION_CD);
+                    var regionDescriptionParam = new SqlParameter("@regionDescription", region.REGION_DESCR);
+                    cmd.Parameters.Add(regionCodeparam);
+                    cmd.Parameters.Add(regionDescriptionParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool EditRegionMaintenance(RegionModel region)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_Region_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var regionIdparam = new SqlParameter("@regionId", region.REGION_ID);
+                    var columnParam = new SqlParameter("@column", region.Column);
+                    var valueParam = new SqlParameter("@value", region.Value);
+                    cmd.Parameters.Add(regionIdparam);
+                    cmd.Parameters.Add(columnParam);
+                    cmd.Parameters.Add(valueParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Add_Subsegment_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var subsegmentCodeparam = new SqlParameter("@subSegmentCode", subsegment.SUB_SEGMENT_CD);
+                    var subsegmentDescriptionParam = new SqlParameter("@subSegmentDescription", subsegment.SUB_SEGMENT_DESCR);
+                    cmd.Parameters.Add(subsegmentCodeparam);
+                    cmd.Parameters.Add(subsegmentDescriptionParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool EditSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_Subsegment_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var subsegmentIdparam = new SqlParameter("@subsegmentId", subsegment.SUB_SEGMENT_ID);
+                    var columnParam = new SqlParameter("@column", subsegment.Column);
+                    var valueParam = new SqlParameter("@value", subsegment.Value);
+                    cmd.Parameters.Add(subsegmentIdparam);
+                    cmd.Parameters.Add(columnParam);
+                    cmd.Parameters.Add(valueParam);
 
                     int result = cmd.ExecuteNonQuery();
                     output = true;
@@ -229,6 +337,52 @@ namespace AetnaAPI.Repositories
                             repObj.UPDT_TMSTMP = Convert.ToDateTime(reader["UPDT_TMSTMP"]);
                         }
                         output.Add(repObj);
+                    }
+                    reader.NextResult();
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public List<TeamModel> GetTeams()
+        {
+            List<TeamModel> output = new List<TeamModel>();
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Teams"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        TeamModel teamObj = new TeamModel();
+                        teamObj.TEAM_ID = Convert.ToInt32(reader["TEAM_ID"]);
+                        teamObj.TEAM_CD = Convert.ToString(reader["TEAM_CD"]);
+                        teamObj.TEAM_DESCR = Convert.ToString(reader["TEAM_DESCR"]);
+                        teamObj.CTRL_COUNT = Convert.ToInt32(reader["CTRL_COUNT"]);
+                        if (!DBNull.Value.Equals(reader["CREAT_BY_ID"]))
+                        {
+                            teamObj.CREAT_BY_ID = Convert.ToString(reader["CREAT_BY_ID"]);
+                        }
+                        if (!DBNull.Value.Equals(reader["CREAT_TMSTMP"]))
+                        {
+                            teamObj.CREAT_TMSTMP = Convert.ToDateTime(reader["CREAT_TMSTMP"]);
+                        }
+                        if (!DBNull.Value.Equals(reader["UPDT_BY_ID"]))
+                        {
+                            teamObj.UPDT_BY_ID = Convert.ToString(reader["UPDT_BY_ID"]);
+                        }
+                        if (!DBNull.Value.Equals(reader["UPDT_TMSTMP"]))
+                        {
+                            teamObj.UPDT_TMSTMP = Convert.ToDateTime(reader["UPDT_TMSTMP"]);
+                        }
+                        output.Add(teamObj);
                     }
                     reader.NextResult();
                     con.Close();

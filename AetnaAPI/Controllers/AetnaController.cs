@@ -34,6 +34,38 @@ namespace AetnaAPI.Controllers
             return output;
         }
 
+        [HttpPost]
+        public bool AddRegionMaintenance(RegionModel region)
+        {
+            var repository = new DataAccess();
+            var output = repository.AddRegionMaintenance(region);
+            return output;
+        }
+
+        [HttpPost]
+        public bool EditRegionMaintenance(RegionModel region)
+        {
+            var repository = new DataAccess();
+            var output = repository.EditRegionMaintenance(region);
+            return output;
+        }
+
+        [HttpPost]
+        public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var repository = new DataAccess();
+            var output = repository.AddSubsegmentMaintenance(subsegment);
+            return output;
+        }
+
+        [HttpPost]
+        public bool EditSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var repository = new DataAccess();
+            var output = repository.EditSubsegmentMaintenance(subsegment);
+            return output;
+        }
+
         public List<ReportModel> GetReports()
         {
             var repository = new DataAccess();
@@ -54,6 +86,14 @@ namespace AetnaAPI.Controllers
             var output = repository.GetSubsegments();
             return output;
         }
+
+        public List<TeamModel> GetTeams()
+        {
+            var repository = new DataAccess();
+            var output = repository.GetTeams();
+            return output;
+        }
+
 
 
         // POST api/values

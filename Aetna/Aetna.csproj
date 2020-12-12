@@ -135,6 +135,7 @@
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\Subsegment.cs" />
+    <Compile Include="Models\Team.cs" />
     <Compile Include="Models\TeamMaintenance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -295,6 +296,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\TeamMaintenance.cshtml" />
     <Content Include="Views\Shared\_AetnaLayout.cshtml" />
+    <Content Include="Views\Home\RegionMaintenance.cshtml" />
+    <Content Include="Views\Home\SubsegmentMaintenance.cshtml" />
+    <Content Include="Views\Home\UserTeamMapping.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

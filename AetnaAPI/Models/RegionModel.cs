@@ -14,5 +14,7 @@ namespace AetnaAPI.Models
         public DateTime? CREAT_TMSTMP { get; set; }
         public string UPDT_BY_ID { get; set; }
         public DateTime? UPDT_TMSTMP { get; set; }
+        public string Column { get; set; }
+        public string Value { get; set; }
     }
 }
