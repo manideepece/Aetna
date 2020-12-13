@@ -118,6 +118,37 @@ namespace Aetna.Controllers
             return View();
         }
 
+        public async Task<ActionResult> UserTeamMappingData(int page, int rows)
+        {
+            int pageIndex = Convert.ToInt32(page) - 1;
+            int pageSize = rows;
+            //var context = new AetnaContext();
+            //var teamMaintenanceRecords = context.TeamMaintenances.ToList();
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // List all Names.    
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetUserTeamMappingData").Result;  // Blocking call!
+            var userTeamMappingRecords = new List<UserTeamMapping>();
+            if (response.IsSuccessStatusCode)
+            {
+                var output = await response.Content.ReadAsStringAsync();
+                userTeamMappingRecords = JsonConvert.DeserializeObject<List<UserTeamMapping>>(output);
+            }
+            int totalRecords = userTeamMappingRecords.Count();
+            var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
+            userTeamMappingRecords = userTeamMappingRecords.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            var jsonData = new
+            {
+                total = totalPages,
+                page = page,
+                records = totalRecords,
+                rows = userTeamMappingRecords
+            };
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
+        }
+
         public async Task<ActionResult> SubsegmentMaintenanceData(int page, int rows)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
@@ -507,6 +538,109 @@ namespace Aetna.Controllers
                 return Json(errormessage, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(userTeamMapping);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/AddUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditCellUserTeamMapping(UserTeamMappingEdit userTeamMapping)
+        {
+            try
+            {
+                var utm = new UserTeamMapping();
+                utm.USER_ID = userTeamMapping.USER_ID;
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    if (userTeamMapping.FIRST_NAM != null)
+                    {
+                        utm.Column = "FIRST_NAM";
+                        utm.Value = userTeamMapping.FIRST_NAM;
+                    }
+                    else if (userTeamMapping.LAST_NAM != null)
+                    {
+                        utm.Column = "LAST_NAM";
+                        utm.Value = userTeamMapping.LAST_NAM;
+                    }
+                    else if (userTeamMapping.EMP_STS_CD != null)
+                    {
+                        utm.Column = "EMP_STS_CD";
+                        utm.Value = userTeamMapping.EMP_STS_CD;
+                    }
+                    else if (userTeamMapping.TEAMS != null)
+                    {
+                        utm.Column = "TEAMS";
+                        utm.Value = string.Join(",", userTeamMapping.TEAMS);
+                    }
+                    var myContent = JsonConvert.SerializeObject(utm);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/EditUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = await response.Content.ReadAsStringAsync();
+                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         [HttpPost]
         public JsonResult CreateTeamMaintenanceUsingContext([Bind(Exclude = "TeamMaintenanceID")] TeamMaintenance teamMaintenance)

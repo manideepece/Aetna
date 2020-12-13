@@ -213,6 +213,97 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public List<UserTeamMapping> GetUserTeamMappingData()
+        {
+            List<UserTeamMapping> output = new List<UserTeamMapping>();
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_User_Team_Mapping"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        UserTeamMapping utmObj = new UserTeamMapping();
+                        utmObj.USER_ID = Convert.ToString(reader["USER_ID"]);
+                        utmObj.FIRST_NAM = Convert.ToString(reader["FIRST_NAM"]);
+                        utmObj.LAST_NAM = Convert.ToString(reader["LAST_NAM"]);
+                        utmObj.EMP_STS_CD = Convert.ToString(reader["EMP_STS_CD"]);
+                        utmObj.TEAMS = Convert.ToString(reader["TEAMS"]);
+                        output.Add(utmObj);
+                    }
+                    reader.NextResult();
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool AddUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Add_User_Team_Mapping"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var userIdParam = new SqlParameter("@userId", userTeamMapping.USER_ID);
+                    var firstNameParam = new SqlParameter("@firstName", userTeamMapping.FIRST_NAM);
+                    var lastNameParam = new SqlParameter("@LastName", userTeamMapping.LAST_NAM);
+                    var employeeStatusParam = new SqlParameter("@employeeStatus", userTeamMapping.EMP_STS_CD);
+                    var teamsParam = new SqlParameter("@teams", userTeamMapping.TEAMS);
+                    cmd.Parameters.Add(userIdParam);
+                    cmd.Parameters.Add(firstNameParam);
+                    cmd.Parameters.Add(lastNameParam);
+                    cmd.Parameters.Add(employeeStatusParam);
+                    cmd.Parameters.Add(teamsParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool EditUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_User_Team_Mapping"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var userIdParam = new SqlParameter("@userId", userTeamMapping.USER_ID);
+                    var columnParam = new SqlParameter("@column", userTeamMapping.Column);
+                    var valueParam = new SqlParameter("@value", userTeamMapping.Value);
+                    cmd.Parameters.Add(userIdParam);
+                    cmd.Parameters.Add(columnParam);
+                    cmd.Parameters.Add(valueParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public List<ReportModel> GetReports()
         {
             List<ReportModel> output = new List<ReportModel>();

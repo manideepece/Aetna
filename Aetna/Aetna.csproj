@@ -137,6 +137,7 @@
     <Compile Include="Models\Subsegment.cs" />
     <Compile Include="Models\Team.cs" />
     <Compile Include="Models\TeamMaintenance.cs" />
+    <Compile Include="Models\UserTeamMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

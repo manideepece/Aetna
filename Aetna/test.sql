@@ -317,3 +317,95 @@ begin
 		   UPDT_TMSTMP
 		   from BTT_SEC_TEAM_LKP_N
 end
+------------------------------------------------------------------------------------------------------------
+
+create proc sp_User_Team_Mapping
+as
+begin
+	select distinct LTRIM(RTRIM(USER_ID)) as 'USER_ID',
+		   (select top 1 LTRIM(RTRIM(FIRST_NAM)) from BTTSEC_USER_N where UDT_USER_ID = utm.USER_ID) as 'FIRST_NAM',
+		   (select top 1 LTRIM(RTRIM(LAST_NAM)) from BTTSEC_USER_N where UDT_USER_ID = utm.USER_ID) as 'LAST_NAM',
+		   (select top 1 LTRIM(RTRIM(EMP_STS_CD)) from BTTSEC_USER_N where UDT_USER_ID = utm.USER_ID) as 'EMP_STS_CD',
+		   STUFF((SELECT DISTINCT ',' + ISNULL(LTRIM(RTRIM(TEAM_DESCR)),'') FROM BTT_SEC_TEAM_LKP_N team join BTT_SEC_USER_TEAM_MAPPING_N tm on team.TEAM_ID = tm.TEAM_ID  WHERE USER_ID = utm.USER_ID
+			FOR XML PATH('')),1,1,'') [TEAMS]
+	from BTT_SEC_USER_TEAM_MAPPING_N utm join BTT_SEC_TEAM_LKP_N team on utm.team_id = team.team_id
+end
+
+--------------------------------------------------------------------------------------------------------------
+create proc sp_SEC_Add_User_Team_Mapping
+@userId varchar(18),
+@firstName varchar(15),
+@LastName varchar(25),
+@employeeStatus varchar(1),
+@teams varchar(255)
+as
+begin
+	select * from BTTSEC_USER_N
+	SELECT * FROM BTT_SEC_TEAM_LKP_N
+	insert into BTTSEC_USER_N values (@userId, @firstName,@LastName,'','A','NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', GETDATE() + 60, 'ALL', 'System',GETDATE(),'System',GETDATE())
+
+	create table #teams (TEAM_ID int)
+
+	insert into #teams
+	SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
+	  FROM 
+	  ( 
+		SELECT 
+			n = CONVERT(XML, '<i>' 
+				+ REPLACE((SELECT STUFF((SELECT ',' + @teams FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+				+ '</i>')
+	  ) AS a 
+	  CROSS APPLY n.nodes('i') AS y(i)
+
+	insert into BTT_SEC_USER_TEAM_MAPPING_N
+	select @userId, team.TEAM_ID,'System',GETDATE(),'System',GETDATE() 
+	from #teams team 
+
+	drop table #teams
+end
+
+--------------------------------------------------------------------------------------------------------------
+
+create proc sp_SEC_Edit_User_Team_Mapping
+@userId varchar(18),
+@column varchar(100),
+@value varchar(max)
+as
+begin
+	if @column = 'FIRST_NAM'
+	begin
+		Update BTTSEC_USER_N set FIRST_NAM = @value where UDT_USER_ID = @userId
+	end
+	else if @column = 'LAST_NAM'
+	begin
+		Update BTTSEC_USER_N set LAST_NAM = @value where UDT_USER_ID = @userId
+	end
+	else if @column = 'EMP_STS_CD'
+	begin
+		Update BTTSEC_USER_N set EMP_STS_CD = @value where UDT_USER_ID = @userId
+	end
+	else if @column = 'TEAMS'
+	begin
+		create table #teams (TEAM_ID int)
+
+		insert into #teams
+		SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @value FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
+
+		insert into BTT_SEC_USER_TEAM_MAPPING_N
+		select @userId, team.TEAM_ID,'System',GETDATE(),'System',GETDATE() 
+		from #teams team
+		where team.TEAM_ID not in (select distinct TEAM_ID from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId)
+
+		delete from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId and TEAM_ID not in (select * from #teams)
+
+		drop table #teams
+	end
+end

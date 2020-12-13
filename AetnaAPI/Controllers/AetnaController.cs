@@ -66,6 +66,29 @@ namespace AetnaAPI.Controllers
             return output;
         }
 
+        public List<UserTeamMapping> GetUserTeamMappingData()
+        {
+            var repository = new DataAccess();
+            var output = repository.GetUserTeamMappingData();
+            return output;
+        }
+
+        [HttpPost]
+        public bool AddUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var repository = new DataAccess();
+            var output = repository.AddUserTeamMapping(userTeamMapping);
+            return output;
+        }
+
+        [HttpPost]
+        public bool EditUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var repository = new DataAccess();
+            var output = repository.EditUserTeamMapping(userTeamMapping);
+            return output;
+        }
+
         public List<ReportModel> GetReports()
         {
             var repository = new DataAccess();

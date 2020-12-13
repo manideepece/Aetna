@@ -9,28 +9,60 @@
 <div class="security-page">
     <div style="border-bottom: 1px solid lightgray;padding: 20px;">User Team Mapping</div>
     <div style="padding:50px 20px;">
-        <table id="RegionMaintenancegrid"></table>
+        <table id="UserTeamMappinggrid"></table>
         <div id="pager2"></div>
     </div>
 </div>
 
 <script>
     $(document).ready(function () {
-        $("#RegionMaintenancegrid").jqGrid({
-            url: '/Home/RegionMaintenanceData',
-            editurl: '/Home/CreateRegionMaintenance',
+        $("#UserTeamMappinggrid").jqGrid({
+            url: '/Home/UserTeamMappingData',
+            editurl: '/Home/CreateUserTeamMapping',
             datatype: "json",
             mtype: 'Get',
-            height: '200px',
-            colNames: ['', 'Region Code', 'Region Description', 'Updated by', 'Updated Date'],
+            height: '300px',
+            colNames: ['UserID', 'Last Name', 'First Name', 'Employee Status', 'Team Name'],
             colModel: [
-                { name: 'REGION_ID', key: true, index: 'REGION_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true } },
-                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true } },
-                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false },
-                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date" },
+                { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true } },
+                { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true } },
+                { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true } },
+                { name: 'EMP_STS_CD', index: 'EMP_STS_CD', width: 20, editable: true },
+                {
+                    name: 'TEAMS', index: 'TEAMS', width: 50, editable: true, edittype: "select",
+                    editoptions: {
+                        dataUrl: '/Home/GetAllTeams',
+                        buildSelect: function (data) {
+                            var sel = '<select>';
+                            sel += '<option value="">Select</option>'
+                            $.each(JSON.parse(data), function (i, accountCoding) {
+                                sel += '<option value="' + accountCoding.TEAM_ID + '">' + accountCoding.TEAM_DESCR + '</option>';
+                            });
+                            return sel + "</select>";
+                        },
+                        //value: "Select:Select;Medical PNC with Rx Rebates:Medical PNC with Rx Rebates;Medical PNC without Rx Rebates:Medical PNC without Rx Rebates;NA:NA",
+                        multiple: true,
+                        style: "width: 100%;",
+                        dataInit: function (elem) {
+                            console.log(elem)
+                            setTimeout(function () {
+                                $(elem).multiselect({
+                                    minWidth: 100, //'auto',
+                                    selectedList: 2,
+                                    buttonWidth: "80%",
+                                    open: function () {
+                                        var $menu = $(".ui-multiselect-menu:visible");
+                                        $menu.width("auto");
+                                        return;
+                                    }
+                                });
+                            }, 50);
+                        },
+                        stype: 'select',
+                    }
+                }
             ],
-            prmNames: { id: "REGION_ID" },
+            prmNames: { id: "USER_ID" },
             rowNum: 10,
             rowList: [10, 20, 30],
             pager: '#pager2',
@@ -43,7 +75,7 @@
             sortorder: "desc",
             cellEdit: true,
             cellsubmit: 'remote',
-            cellurl: '/Home/EditCellRegionMaintenance',
+            cellurl: '/Home/EditCellUserTeamMapping',
             jsonReader:
             {
                 root: "rows",
@@ -51,12 +83,12 @@
                 total: "total",
                 records: "records",
                 repeatitems: false,
-                Id: "REGION_ID"
+                Id: "USER_ID"
             },
             autowidth: true
         })
         .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
-        $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
+        $("#UserTeamMappinggrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
                 edittext: "Edit",
@@ -71,7 +103,7 @@
                 addParams: {
                     addRowParams: {
                         keys: true,
-                        url: "/Home/CreateRegionMaintenance",
+                        url: "/Home/CreateUserTeamMapping",
                         aftersavefunc: function () {
                             var $this = $(this); // grid
                             setTimeout(function () {
@@ -86,7 +118,7 @@
 
         function editRow(id) {
             if (id && id !== lastSelection) {
-                var grid = $("#RegionMaintenancegrid");
+                var grid = $("#UserTeamMappinggrid");
                 grid.jqGrid('restoreRow', lastSelection);
                 grid.jqGrid('editRow', id, { keys: true });
                 lastSelection = id;
