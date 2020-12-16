@@ -16,6 +16,7 @@
 
 <script>
     $(document).ready(function () {
+        var lastSelection;
         $("#TeamMaintenancegrid").jqGrid({
             url: '/Home/TeamMaintenanceData',
             editurl: '/Home/CreateTeamMaintenance',
@@ -154,6 +155,13 @@
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellTeamMaintenance',
+            beforeSelectRow: function (rowid) {
+                if (rowid !== lastSelection) {
+                    lastSelection = rowid;
+                    $("#TeamMaintenancegrid").jqGrid('saveRow', lastSelection);
+                }
+                return true;
+            },
             //afterEditCell: function (rowid, celname, value, iRow, iCol) {
             //    if (cellname == "Reports") { return value.toString() }
             //},
@@ -241,7 +249,7 @@
                 //}
             }
         );
-        var lastSelection;
+        
 
         function editRow(id) {
             if (id && id !== lastSelection) {
