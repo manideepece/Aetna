@@ -44,6 +44,15 @@
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellSubsegmentMaintenance',
+            beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
+                if (selectedRowId != null && selectedCellId != null) {
+                    $('#SubsegmentMaintenancegrid').saveCell(selectedRowId, selectedCellId);
+                }
+            },
+            afterEditCell: function (id, name, val, iRow, iCol) {
+                selectedRowId = iRow;
+                selectedCellId = iCol;
+            },
             jsonReader:
             {
                 root: "rows",

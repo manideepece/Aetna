@@ -76,6 +76,15 @@
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellUserTeamMapping',
+            beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
+                if (selectedRowId != null && selectedCellId != null) {
+                    $('#UserTeamMappinggrid').saveCell(selectedRowId, selectedCellId);
+                }
+            },
+            afterEditCell: function (id, name, val, iRow, iCol) {
+                selectedRowId = iRow;
+                selectedCellId = iCol;
+            },
             jsonReader:
             {
                 root: "rows",
