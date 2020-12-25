@@ -26,7 +26,7 @@
             datatype: "json",
             mtype: 'Get',
             height: '300px',
-            colNames: ['','UserID', 'Last Name', 'First Name', 'Employee Status', 'Team Name'],
+            colNames: ['','UserID*', 'Last Name*', 'First Name*', 'Employee Status*', 'Team Name'],
             colModel: [
                 {
                     name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
@@ -97,12 +97,12 @@
             cellurl: '/Home/EditCellUserTeamMapping',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
                 var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != rowid || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#UserTeamMappinggrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
-                selectedRowId = iRow;
+                selectedRowId = id;
                 selectedCellId = iCol;
                 selectedCellValue = val;
             },
@@ -152,6 +152,10 @@
                 }
             }
         );
+
+        $("#UserTeamMappinggrid_ilsave").click(function () {
+            $("#UserTeamMappinggrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        });
 
         function editRow(id) {
             if (id && id !== lastSelection) {

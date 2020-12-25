@@ -26,7 +26,7 @@
             datatype: "json",
             mtype: 'Get',
             height: '200px',
-            colNames: ['','', 'Subsegment Code', 'Subsegment Description', 'Updated by', 'Updated Date'],
+            colNames: ['','', 'Subsegment Code*', 'Subsegment Description*', 'Updated by', 'Updated Date'],
             colModel: [
                 {
                     name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
@@ -64,12 +64,12 @@
             cellurl: '/Home/EditCellSubsegmentMaintenance',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
                 var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != rowid || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#SubsegmentMaintenancegrid').saveCell(selectedRowId, selectedCellId);
                 }                
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
-                selectedRowId = iRow;
+                selectedRowId = id;
                 selectedCellId = iCol; 
                 selectedCellValue = val;
             },
@@ -119,6 +119,10 @@
                 }
             }
         );
+
+        $("#SubsegmentMaintenancegrid_ilsave").click(function () {
+            $("#SubsegmentMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        });
 
         function editRow(id) {
             if (id && id !== lastSelection) {

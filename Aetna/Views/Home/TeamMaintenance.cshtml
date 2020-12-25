@@ -26,7 +26,7 @@
             datatype: "json",
             mtype: 'Get',
             height: '400px',
-            colNames: ['','', 'Team Code', 'Team Name', 'Ctrl Cnt', 'Reports', 'Region', 'Subsegment'],
+            colNames: ['','', 'Team Code*', 'Team Name*', 'Ctrl Cnt*', 'Reports', 'Region', 'Subsegment'],
             colModel: [
                 {
                     name: 'act', index: 'act', width: 10, align: 'center', search: false, sortable: false, formatter: 'actions',
@@ -178,12 +178,12 @@
             cellurl: '/Home/EditCellTeamMaintenance',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
                 var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != rowid || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#TeamMaintenancegrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
-                selectedRowId = iRow;
+                selectedRowId = id;
                 selectedCellId = iCol;     
                 selectedCellValue = val;
             },
@@ -279,7 +279,10 @@
                 //}
             }
         );
-        
+
+        $("#TeamMaintenancegrid_ilsave").click(function () {
+            $("#TeamMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        });
 
         function editRow(id) {
             if (id && id !== lastSelection) {
