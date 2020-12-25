@@ -42,10 +42,10 @@
                     }
                 },
                 { name: 'SUB_SEGMENT_ID', key: true, index: 'SUB_SEGMENT_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'SUB_SEGMENT_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true } },
-                { name: 'SUB_SEGMENT_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true } },
-                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false },
-                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date" },
+                { name: 'SUB_SEGMENT_CD', index: 'SUB_SEGMENT_CD', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
+                { name: 'SUB_SEGMENT_DESCR', index: 'SUB_SEGMENT_DESCR', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
+                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
+                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date",search: false },
             ],
             prmNames: { id: "SUB_SEGMENT_ID" },
             rowNum: 10,
@@ -81,7 +81,15 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
+                {},
+                {},
+                {},
+                {
+                    closeAfterSearch: true,
+                    closeAfterReset: true,
+                    closeOnEscape: true
+                });
         $("#SubsegmentMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,

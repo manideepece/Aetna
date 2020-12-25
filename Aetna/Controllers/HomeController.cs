@@ -38,7 +38,7 @@ namespace Aetna.Controllers
             return View();
         }
 
-        public async Task<ActionResult> TeamMaintenanceData(int page, int rows)
+        public async Task<ActionResult> TeamMaintenanceData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
@@ -55,6 +55,31 @@ namespace Aetna.Controllers
             {
                 var output = await response.Content.ReadAsStringAsync();
                 teamMaintenanceRecords = JsonConvert.DeserializeObject<List<TeamMaintenance>>(output);
+            }
+            if (_search)
+            {
+                switch (searchField)
+                {
+                    case "TeamCode":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamCode.Contains(searchString)).ToList();
+                        break;
+                    case "TeamName":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamName.Contains(searchString)).ToList();
+                        break;
+                    case "CtrlCnt":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.CtrlCnt == searchString).ToList();
+                        break;
+                    case "Reports":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Reports.Contains(searchString)).ToList();
+                        break;
+                    case "Region":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Region.Contains(searchString)).ToList();
+                        break;
+                    case "Subsegment":
+                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Subsegment.Contains(searchString)).ToList();
+                        break;
+                }
+
             }
             int totalRecords = teamMaintenanceRecords.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
@@ -81,7 +106,7 @@ namespace Aetna.Controllers
             return View();
         }
 
-        public async Task<ActionResult> RegionMaintenanceData(int page, int rows)
+        public async Task<ActionResult> RegionMaintenanceData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
@@ -94,6 +119,22 @@ namespace Aetna.Controllers
             {
                 var output = await response.Content.ReadAsStringAsync();
                 regions = JsonConvert.DeserializeObject<List<Region>>(output);
+            }
+            if (_search)
+            {
+                switch (searchField)
+                {
+                    case "REGION_CD":
+                        regions = regions.Where(x => x.REGION_CD.Contains(searchString)).ToList();
+                        break;
+                    case "REGION_DESCR":
+                        regions = regions.Where(x => x.REGION_DESCR.Contains(searchString)).ToList();
+                        break;
+                    case "UPDT_BY_ID":
+                        regions = regions.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
+                        break;
+                }
+                    
             }
             int totalRecords = regions.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
@@ -118,7 +159,7 @@ namespace Aetna.Controllers
             return View();
         }
 
-        public async Task<ActionResult> UserTeamMappingData(int page, int rows)
+        public async Task<ActionResult> UserTeamMappingData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
@@ -136,6 +177,25 @@ namespace Aetna.Controllers
                 var output = await response.Content.ReadAsStringAsync();
                 userTeamMappingRecords = JsonConvert.DeserializeObject<List<UserTeamMapping>>(output);
             }
+            if (_search)
+            {
+                switch (searchField)
+                {
+                    case "USER_ID":
+                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.USER_ID.Contains(searchString)).ToList();
+                        break;
+                    case "FIRST_NAM":
+                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.FIRST_NAM.Contains(searchString)).ToList();
+                        break;
+                    case "LAST_NAM":
+                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.LAST_NAM.Contains(searchString)).ToList();
+                        break;
+                    case "TEAMS":
+                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.TEAMS.Contains(searchString)).ToList();
+                        break;
+                }
+
+            }
             int totalRecords = userTeamMappingRecords.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
             userTeamMappingRecords = userTeamMappingRecords.Skip(pageIndex * pageSize).Take(pageSize).ToList();
@@ -149,7 +209,7 @@ namespace Aetna.Controllers
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> SubsegmentMaintenanceData(int page, int rows)
+        public async Task<ActionResult> SubsegmentMaintenanceData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
@@ -162,6 +222,22 @@ namespace Aetna.Controllers
             {
                 var output = await response.Content.ReadAsStringAsync();
                 subsegments = JsonConvert.DeserializeObject<List<Subsegment>>(output);
+            }
+            if (_search)
+            {
+                switch (searchField)
+                {
+                    case "SUB_SEGMENT_CD":
+                        subsegments = subsegments.Where(x => x.SUB_SEGMENT_CD.Contains(searchString)).ToList();
+                        break;
+                    case "SUB_SEGMENT_DESCR":
+                        subsegments = subsegments.Where(x => x.SUB_SEGMENT_DESCR.Contains(searchString)).ToList();
+                        break;
+                    case "UPDT_BY_ID":
+                        subsegments = subsegments.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
+                        break;
+                }
+
             }
             int totalRecords = subsegments.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);

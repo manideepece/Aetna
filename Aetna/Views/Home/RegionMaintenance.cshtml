@@ -42,10 +42,10 @@
                     }
                 },
                 { name: 'REGION_ID', key: true, index: 'REGION_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: false } },
-                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: false } },
-                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false },
-                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date" },
+                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: false }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: false }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date", search: false },
             ],
             prmNames: { id: "REGION_ID" },
             rowNum: 10,
@@ -81,7 +81,15 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
+                {},
+                {},
+                {},
+                {
+                    closeAfterSearch: true,
+                    closeAfterReset: true,
+                    closeOnEscape: true
+                });
         $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,

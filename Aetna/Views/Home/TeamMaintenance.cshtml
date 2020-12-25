@@ -42,9 +42,9 @@
                     }
                 },
                 { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true } },
-                { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true } },
-                { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true } },
+                { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 {
                     name: 'Reports', index: 'Reports', width: 50, editable: true, edittype: "select",
                     editoptions: {
@@ -77,7 +77,8 @@
                             }, 50);
                         },
                         stype: 'select',
-                    }
+                    },
+                    search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 },
                 {
                     name: 'Region', index: 'Region', width: 30, editable: true, edittype: "select",
@@ -115,7 +116,8 @@
                             return;
                         },
                         stype: 'select',
-                    }
+                    },
+                    search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 },
                 {
                     name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, edittype: "select",
@@ -152,7 +154,8 @@
                             }, 50);
                         },
                         stype: 'select',
-                    }
+                    },
+                    search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 }
             ],
             prmNames: { id: "TeamMaintenanceID" },
@@ -192,7 +195,15 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
+                {},
+                {},
+                {},
+                {
+                    closeAfterSearch: true,
+                    closeAfterReset: true,
+                    closeOnEscape: true
+                });
         //$("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
         //    { edit: false, add: true, del: false, refresh: false, search: false },
         //    {

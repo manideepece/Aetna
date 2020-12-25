@@ -41,10 +41,10 @@
                         }
                     }
                 },
-                { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true } },
-                { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true } },
-                { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true } },
-                { name: 'EMP_STS_CD', index: 'EMP_STS_CD', width: 20, editable: true },
+                { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'EMP_STS_CD', index: 'EMP_STS_CD', width: 20, editable: true, search: false },
                 {
                     name: 'TEAMS', index: 'TEAMS', width: 50, editable: true, edittype: "select",
                     editoptions: {
@@ -76,7 +76,8 @@
                             }, 50);
                         },
                         stype: 'select',
-                    }
+                    },
+                    search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 }
             ],
             prmNames: { id: "USER_ID" },
@@ -113,7 +114,15 @@
             },
             autowidth: true
         })
-        .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
+                {},
+                {},
+                {},
+                {
+                    closeAfterSearch: true,
+                    closeAfterReset: true,
+                    closeOnEscape: true
+                });
         $("#UserTeamMappinggrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
