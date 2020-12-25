@@ -19,6 +19,7 @@
         var lastSelection;
         var selectedCellId;
         var selectedRowId;
+        var selectedCellValue;
         $("#RegionMaintenancegrid").jqGrid({
             url: '/Home/RegionMaintenanceData',
             editurl: '/Home/CreateRegionMaintenance',
@@ -51,7 +52,6 @@
             rowNum: 10,
             rowList: [10, 20, 30],
             pager: '#pager2',
-            //ajaxSelectOptions: { cache: false },
             recordtext: "{0} - {1} of {2} records",
             pgtext: "{0} of {1}",
             pgprev: "Prev",
@@ -62,13 +62,16 @@
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellRegionMaintenance',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol)) {
+                var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
+                    console.log("beforeEditCell " + selectedRowId + " " + selectedCellId)
                     $('#RegionMaintenancegrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
                 selectedRowId = iRow;
                 selectedCellId = iCol;
+                selectedCellValue = val;
             },
             jsonReader:
             {
@@ -106,12 +109,21 @@
                     addRowParams: {
                         keys: true,
                         url: "/Home/CreateRegionMaintenance",
-                        aftersavefunc: function () {
+                        position: "last",
+                        aftersavefunc: function (rowid, response, options) {
+                            console.log("After Save")
                             var $this = $(this); // grid
                             setTimeout(function () {
                                 $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
                             }, 1000);
                         }
+                        //successfunc: function (val) {
+                        //    console.log(val);
+                        //    if (val.responseText == 'OK') {
+                        //        $(this).jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+                        //    }
+
+                        //}
                     }
                 }
             }

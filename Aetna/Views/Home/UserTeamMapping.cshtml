@@ -19,6 +19,7 @@
         var lastSelection;
         var selectedCellId;
         var selectedRowId;
+        var selectedCellValue;
         $("#UserTeamMappinggrid").jqGrid({
             url: '/Home/UserTeamMappingData',
             editurl: '/Home/CreateUserTeamMapping',
@@ -95,13 +96,15 @@
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellUserTeamMapping',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol)) {
+                var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#UserTeamMappinggrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
                 selectedRowId = iRow;
                 selectedCellId = iCol;
+                selectedCellValue = val;
             },
             jsonReader:
             {

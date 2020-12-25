@@ -19,6 +19,7 @@
         var lastSelection;
         var selectedCellId;
         var selectedRowId;
+        var selectedCellValue;
         $("#TeamMaintenancegrid").jqGrid({
             url: '/Home/TeamMaintenanceData',
             editurl: '/Home/CreateTeamMaintenance',
@@ -176,13 +177,15 @@
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellTeamMaintenance',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
-                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol)) {
+                var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#TeamMaintenancegrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
                 selectedRowId = iRow;
-                selectedCellId = iCol;      
+                selectedCellId = iCol;     
+                selectedCellValue = val;
             },
             jsonReader:
             {
