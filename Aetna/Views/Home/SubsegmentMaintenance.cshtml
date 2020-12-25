@@ -16,14 +16,31 @@
 
 <script>
     $(document).ready(function () {
+        var lastSelection;
+        var selectedCellId;
+        var selectedRowId;
         $("#SubsegmentMaintenancegrid").jqGrid({
             url: '/Home/SubsegmentMaintenanceData',
             editurl: '/Home/CreateSubsegmentMaintenance',
             datatype: "json",
             mtype: 'Get',
             height: '200px',
-            colNames: ['', 'Subsegment Code', 'Subsegment Description', 'Updated by', 'Updated Date'],
+            colNames: ['','', 'Subsegment Code', 'Subsegment Description', 'Updated by', 'Updated Date'],
             colModel: [
+                {
+                    name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
+                    formatoptions: {
+                        keys: true,
+                        editbutton: false,
+                        editformbutton: false,
+                        delOptions:
+                        {
+                            onclickSubmit: function (options, rowid) {
+                                options.url = "/Home/DeleteSubsegmentMaintenance"
+                            }
+                        }
+                    }
+                },
                 { name: 'SUB_SEGMENT_ID', key: true, index: 'SUB_SEGMENT_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
                 { name: 'SUB_SEGMENT_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true } },
                 { name: 'SUB_SEGMENT_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true } },
@@ -45,13 +62,13 @@
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellSubsegmentMaintenance',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
-                if (selectedRowId != null && selectedCellId != null) {
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol)) {
                     $('#SubsegmentMaintenancegrid').saveCell(selectedRowId, selectedCellId);
-                }
+                }                
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
                 selectedRowId = iRow;
-                selectedCellId = iCol;
+                selectedCellId = iCol; 
             },
             jsonReader:
             {
@@ -64,7 +81,7 @@
             },
             autowidth: true
         })
-        .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
         $("#SubsegmentMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
@@ -91,7 +108,6 @@
                 }
             }
         );
-        var lastSelection;
 
         function editRow(id) {
             if (id && id !== lastSelection) {

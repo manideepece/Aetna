@@ -409,3 +409,48 @@ begin
 		drop table #teams
 	end
 end
+
+--------------------------------------------------------------------------------------------------------------------------------------
+CREATE proc dbo.sp_SEC_Delete_Region_Maintenance
+@regionId varchar(5)
+as
+begin
+	delete trs from BTT_SEC_TEAM_REG_SEG_MAPPING_N trs join BTT_SEC_REG_SEG_MAPPING_N rs on trs.REGION_SEGMENT_MAPPING_ID = rs.REGION_SEGMENT_MAPPING_ID
+	where REGION_ID = @regionId
+
+	delete from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = @regionId
+
+	delete from BTT_SEC_REG_LKP_N where REGION_ID = @regionId
+end
+-------------------------------------------------------------------------------------------------------------------------------------
+CREATE proc dbo.sp_SEC_Delete_Subsegment_Maintenance
+@subsegmentId varchar(5)
+as
+begin
+	delete trs from BTT_SEC_TEAM_REG_SEG_MAPPING_N trs join BTT_SEC_REG_SEG_MAPPING_N rs on trs.REGION_SEGMENT_MAPPING_ID = rs.REGION_SEGMENT_MAPPING_ID
+	where SUB_SEGMENT_ID = @subsegmentId
+
+	delete from BTT_SEC_REG_SEG_MAPPING_N where SUB_SEGMENT_ID = @subsegmentId
+
+	delete from BTT_SEC_SUB_SEGMENT_LKP_N where SUB_SEGMENT_ID = @subsegmentId
+end
+--------------------------------------------------------------------------------------------------------------------------------------
+CREATE proc dbo.sp_SEC_Delete_User_Team_Mapping
+@userId varchar(18)
+as
+begin
+	delete from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId
+
+	delete from BTTSEC_USER_N where UDT_USER_ID = @userId
+end
+----------------------------------------------------------------------------------------------------------------------------------------
+CREATE proc dbo.sp_SEC_Delete_Team_Maintenance
+@teamId varchar(18)
+as
+begin
+	delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId
+
+	delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId
+
+	delete from BTT_SEC_TEAM_LKP_N where TEAM_ID = @teamId
+end

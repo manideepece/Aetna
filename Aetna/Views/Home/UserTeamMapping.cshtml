@@ -16,14 +16,31 @@
 
 <script>
     $(document).ready(function () {
+        var lastSelection;
+        var selectedCellId;
+        var selectedRowId;
         $("#UserTeamMappinggrid").jqGrid({
             url: '/Home/UserTeamMappingData',
             editurl: '/Home/CreateUserTeamMapping',
             datatype: "json",
             mtype: 'Get',
             height: '300px',
-            colNames: ['UserID', 'Last Name', 'First Name', 'Employee Status', 'Team Name'],
+            colNames: ['','UserID', 'Last Name', 'First Name', 'Employee Status', 'Team Name'],
             colModel: [
+                {
+                    name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
+                    formatoptions: {
+                        keys: true,
+                        editbutton: false,
+                        editformbutton: false,
+                        delOptions:
+                        {
+                            onclickSubmit: function (options, rowid) {
+                                options.url = "/Home/DeleteUserTeamMapping"
+                            }
+                        }
+                    }
+                },
                 { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true } },
                 { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true } },
                 { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true } },
@@ -77,7 +94,7 @@
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellUserTeamMapping',
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
-                if (selectedRowId != null && selectedCellId != null) {
+                if (selectedRowId != null && selectedCellId != null && (selectedRowId != iRow || selectedCellId != iCol)) {
                     $('#UserTeamMappinggrid').saveCell(selectedRowId, selectedCellId);
                 }
             },
@@ -123,7 +140,6 @@
                 }
             }
         );
-        var lastSelection;
 
         function editRow(id) {
             if (id && id !== lastSelection) {

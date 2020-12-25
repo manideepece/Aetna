@@ -35,6 +35,14 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
+        public bool DeleteTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            var repository = new DataAccess();
+            var output = repository.DeleteTeamMaintenance(teamMaintenance);
+            return output;
+        }
+
+        [HttpPost]
         public bool AddRegionMaintenance(RegionModel region)
         {
             var repository = new DataAccess();
@@ -51,6 +59,14 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
+        public bool DeleteRegionMaintenance(RegionModel region)
+        {
+            var repository = new DataAccess();
+            var output = repository.DeleteRegionMaintenance(region);
+            return output;
+        }
+
+        [HttpPost]
         public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
         {
             var repository = new DataAccess();
@@ -63,6 +79,14 @@ namespace AetnaAPI.Controllers
         {
             var repository = new DataAccess();
             var output = repository.EditSubsegmentMaintenance(subsegment);
+            return output;
+        }
+
+        [HttpPost]
+        public bool DeleteSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var repository = new DataAccess();
+            var output = repository.DeleteSubsegmentMaintenance(subsegment);
             return output;
         }
 
@@ -86,6 +110,14 @@ namespace AetnaAPI.Controllers
         {
             var repository = new DataAccess();
             var output = repository.EditUserTeamMapping(userTeamMapping);
+            return output;
+        }
+
+        [HttpPost]
+        public bool DeleteUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var repository = new DataAccess();
+            var output = repository.DeleteUserTeamMapping(userTeamMapping);
             return output;
         }
 

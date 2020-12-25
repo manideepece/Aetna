@@ -105,6 +105,30 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public bool DeleteTeamMaintenance(TeamMaintenance teamMaintenance)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Delete_Team_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var teamIdparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
+                    cmd.Parameters.Add(teamIdparam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public bool AddRegionMaintenance(RegionModel region)
         {
             var output = false;
@@ -159,6 +183,30 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public bool DeleteRegionMaintenance(RegionModel region)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Delete_Region_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var regionIdparam = new SqlParameter("@regionId", region.REGION_ID);
+                    cmd.Parameters.Add(regionIdparam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
         {
             var output = false;
@@ -203,6 +251,30 @@ namespace AetnaAPI.Repositories
                     cmd.Parameters.Add(subsegmentIdparam);
                     cmd.Parameters.Add(columnParam);
                     cmd.Parameters.Add(valueParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool DeleteSubsegmentMaintenance(SubsegmentModel subsegment)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Delete_Subsegment_Maintenance"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var subsegmentIdparam = new SqlParameter("@subsegmentId", subsegment.SUB_SEGMENT_ID);
+                    cmd.Parameters.Add(subsegmentIdparam);
 
                     int result = cmd.ExecuteNonQuery();
                     output = true;
@@ -294,6 +366,30 @@ namespace AetnaAPI.Repositories
                     cmd.Parameters.Add(userIdParam);
                     cmd.Parameters.Add(columnParam);
                     cmd.Parameters.Add(valueParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
+        public bool DeleteUserTeamMapping(UserTeamMapping userTeamMapping)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Delete_User_Team_Mapping"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var userIdParam = new SqlParameter("@userId", userTeamMapping.USER_ID);
+                    cmd.Parameters.Add(userIdParam);
 
                     int result = cmd.ExecuteNonQuery();
                     output = true;
