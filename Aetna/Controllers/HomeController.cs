@@ -340,7 +340,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -420,7 +420,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -622,7 +622,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -752,7 +752,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json(output, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {

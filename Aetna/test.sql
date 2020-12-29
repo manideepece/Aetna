@@ -366,26 +366,23 @@ end
 
 --------------------------------------------------------------------------------------------------------------
 
-create proc sp_SEC_Edit_User_Team_Mapping
+ALTER proc ddbo.sp_SEC_Add_User_Team_Mapping
 @userId varchar(18),
-@column varchar(100),
-@value varchar(max)
+@firstName varchar(15),
+@LastName varchar(25),
+@employeeStatus varchar(1),
+@teams varchar(255)
 as
 begin
-	if @column = 'FIRST_NAM'
+	
+	if exists (select * from BTTSEC_USER_N where LTRIM(RTRIM(UDT_USER_ID)) = @userId)
 	begin
-		Update BTTSEC_USER_N set FIRST_NAM = @value where UDT_USER_ID = @userId
+		SELECT 'User Id already exists'
 	end
-	else if @column = 'LAST_NAM'
+	else
 	begin
-		Update BTTSEC_USER_N set LAST_NAM = @value where UDT_USER_ID = @userId
-	end
-	else if @column = 'EMP_STS_CD'
-	begin
-		Update BTTSEC_USER_N set EMP_STS_CD = @value where UDT_USER_ID = @userId
-	end
-	else if @column = 'TEAMS'
-	begin
+		insert into BTTSEC_USER_N values (@userId, @firstName,@LastName,'','A','NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', GETDATE() + 60, 'ALL', GETDATE(),'System',GETDATE(),'System')
+
 		create table #teams (TEAM_ID int)
 
 		insert into #teams
@@ -394,19 +391,18 @@ begin
 		  ( 
 			SELECT 
 				n = CONVERT(XML, '<i>' 
-					+ REPLACE((SELECT STUFF((SELECT ',' + @value FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @teams FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
 					+ '</i>')
 		  ) AS a 
 		  CROSS APPLY n.nodes('i') AS y(i)
 
 		insert into BTT_SEC_USER_TEAM_MAPPING_N
 		select @userId, team.TEAM_ID,'System',GETDATE(),'System',GETDATE() 
-		from #teams team
-		where team.TEAM_ID not in (select distinct TEAM_ID from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId)
-
-		delete from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId and TEAM_ID not in (select * from #teams)
+		from #teams team 
 
 		drop table #teams
+
+		SELECT 'Saved Successfully!'
 	end
 end
 

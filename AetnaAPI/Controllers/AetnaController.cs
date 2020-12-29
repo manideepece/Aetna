@@ -98,7 +98,7 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
-        public bool AddUserTeamMapping(UserTeamMapping userTeamMapping)
+        public string AddUserTeamMapping(UserTeamMapping userTeamMapping)
         {
             var repository = new DataAccess();
             var output = repository.AddUserTeamMapping(userTeamMapping);

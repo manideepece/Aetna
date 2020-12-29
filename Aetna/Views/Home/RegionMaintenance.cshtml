@@ -9,6 +9,9 @@
 <div class="security-page">
     <div style="border-bottom: 1px solid lightgray;padding: 20px;">Region Maintenance</div>
     <div style="padding:50px 20px;">
+        <div style="font-size:15px;text-align:center">
+            <span id="infocnt_custom" style="color:red;"></span>
+        </div>
         <table id="RegionMaintenancegrid"></table>
         <div id="pager2"></div>
     </div>
@@ -73,8 +76,7 @@
                 selectedRowId = id;
                 selectedCellId = iCol;
                 selectedCellValue = val;
-            },
-            
+            },    
             jsonReader:
             {
                 root: "rows",
@@ -107,31 +109,42 @@
                 save: true,
                 savetext: "Save",
                 refresh: false,
-                addParams: {
-                    addRowParams: {
-                        keys: true,
-                        url: "/Home/CreateRegionMaintenance",
-                        aftersavefunc: function (rowid, response, options) {
-                            console.log("After Save")
-                            var $this = $(this); // grid
-                            setTimeout(function () {
-                                $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
-                            }, 1000);
-                        }
-                        //successfunc: function (val) {
-                        //    console.log(val);
-                        //    if (val.responseText == 'OK') {
-                        //        $(this).jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
-                        //    }
-
-                        //}
+                   
+                editParams: {
+                    aftersavefunc: function (rowid, response, options) {
+                        console.log(JSON.parse(response.responseText));
+                        $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
+                        var $this = $(this); // grid
+                        setTimeout(function () {
+                            $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
+                        }, 50);
                     }
+                    //addRowParams: {
+                    //    keys: true,
+                    //    url: "/Home/CreateRegionMaintenance",
+                    //    aftersavefunc: function (rowid, response, options) {
+                    //        console.log("After Save")
+                    //        var $this = $(this); // grid
+                    //        setTimeout(function () {
+                    //            $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
+                    //        }, 1000);
+                    //    }
+                    //    //successfunc: function (val) {
+                    //    //    console.log(val);
+                    //    //    if (val.responseText == 'OK') {
+                    //    //        $(this).jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+                    //    //    }
+
+                    //    //}
+                    //}
                 }
             }
         );
 
-        $("#RegionMaintenancegrid_ilsave").click(function () {
-            $("#RegionMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        $.extend($.jgrid, {
+            info_dialog: function (caption, content, c_b, modalopt) {
+                $("#infocnt_custom").text(content.replace('*',''))
+            }
         });
 
         function editRow(id) {

@@ -9,6 +9,9 @@
 <div class="security-page">
     <div style="border-bottom: 1px solid lightgray;padding: 20px;">Team Maintenance</div>
     <div style="padding:50px 20px;">
+        <div style="font-size:15px;text-align:center">
+            <span id="infocnt_custom" style="color:red;"></span>
+        </div>
         <table id="TeamMaintenancegrid"></table>
         <div id="pager2"></div>
     </div>
@@ -247,22 +250,16 @@
                 save: true,
                 savetext: "Save",
                 refresh: false,
-                //editParams: {
-                //    keys: true,
-                //    url: "/Home/CreateTeamMaintenance",
-                //},
-                addParams: {
-                    addRowParams: {
-                        keys: true,
-                        url: "/Home/CreateTeamMaintenance",
-                        aftersavefunc: function () {
-                            var $this = $(this); // grid
-                            setTimeout(function () {
-                                $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
-                            }, 50);
-                        }
+                editParams: {
+                    aftersavefunc: function (rowid, response, options) {
+                        console.log(JSON.parse(response.responseText));
+                        $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
+                        var $this = $(this); // grid
+                        setTimeout(function () {
+                            $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
+                        }, 50);
                     }
-                },
+                }
                 //onSelectRow: editRow,
                 //beforeSaveRow: function (o, rowid) {
                 //    // this is where you should save the data
@@ -280,8 +277,14 @@
             }
         );
 
-        $("#TeamMaintenancegrid_ilsave").click(function () {
-            $("#TeamMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        //$("#TeamMaintenancegrid_ilsave").click(function () {
+        //    $("#TeamMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
+        //});
+
+        $.extend($.jgrid, {
+            info_dialog: function (caption, content, c_b, modalopt) {
+                $("#infocnt_custom").text(content.replace('*', ''))
+            }
         });
 
         function editRow(id) {

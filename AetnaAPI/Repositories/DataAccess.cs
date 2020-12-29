@@ -316,9 +316,9 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool AddUserTeamMapping(UserTeamMapping userTeamMapping)
+        public string AddUserTeamMapping(UserTeamMapping userTeamMapping)
         {
-            var output = false;
+            string result = "";
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
             using (var con = new SqlConnection(conn))
             {
@@ -339,13 +339,12 @@ namespace AetnaAPI.Repositories
                     cmd.Parameters.Add(employeeStatusParam);
                     cmd.Parameters.Add(teamsParam);
 
-                    int result = cmd.ExecuteNonQuery();
-                    output = true;
+                    result = Convert.ToString(cmd.ExecuteScalar());
 
                     con.Close();
                 }
             }
-            return output;
+            return result;
         }
 
         public bool EditUserTeamMapping(UserTeamMapping userTeamMapping)
