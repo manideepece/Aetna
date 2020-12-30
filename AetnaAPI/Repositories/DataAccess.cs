@@ -105,7 +105,7 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool DeleteTeamMaintenance(TeamMaintenance teamMaintenance)
+        public bool DeleteTeamMaintenance(string TeamMaintenanceID)
         {
             var output = false;
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
@@ -117,7 +117,7 @@ namespace AetnaAPI.Repositories
                     cmd.Connection = con;
                     con.Open();
 
-                    var teamIdparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
+                    var teamIdparam = new SqlParameter("@teamId", TeamMaintenanceID);
                     cmd.Parameters.Add(teamIdparam);
 
                     int result = cmd.ExecuteNonQuery();
@@ -183,7 +183,7 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool DeleteRegionMaintenance(RegionModel region)
+        public bool DeleteRegionMaintenance(string REGION_ID)
         {
             var output = false;
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
@@ -195,7 +195,7 @@ namespace AetnaAPI.Repositories
                     cmd.Connection = con;
                     con.Open();
 
-                    var regionIdparam = new SqlParameter("@regionId", region.REGION_ID);
+                    var regionIdparam = new SqlParameter("@regionId", REGION_ID);
                     cmd.Parameters.Add(regionIdparam);
 
                     int result = cmd.ExecuteNonQuery();
@@ -261,7 +261,7 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool DeleteSubsegmentMaintenance(SubsegmentModel subsegment)
+        public bool DeleteSubsegmentMaintenance(string SUB_SEGMENT_ID)
         {
             var output = false;
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
@@ -273,7 +273,7 @@ namespace AetnaAPI.Repositories
                     cmd.Connection = con;
                     con.Open();
 
-                    var subsegmentIdparam = new SqlParameter("@subsegmentId", subsegment.SUB_SEGMENT_ID);
+                    var subsegmentIdparam = new SqlParameter("@subsegmentId", SUB_SEGMENT_ID);
                     cmd.Parameters.Add(subsegmentIdparam);
 
                     int result = cmd.ExecuteNonQuery();
@@ -375,7 +375,7 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool DeleteUserTeamMapping(UserTeamMapping userTeamMapping)
+        public bool DeleteUserTeamMapping(string USER_ID)
         {
             var output = false;
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
@@ -387,7 +387,7 @@ namespace AetnaAPI.Repositories
                     cmd.Connection = con;
                     con.Open();
 
-                    var userIdParam = new SqlParameter("@userId", userTeamMapping.USER_ID);
+                    var userIdParam = new SqlParameter("@userId", USER_ID);
                     cmd.Parameters.Add(userIdParam);
 
                     int result = cmd.ExecuteNonQuery();

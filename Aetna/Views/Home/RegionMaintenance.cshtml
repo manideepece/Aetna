@@ -29,22 +29,8 @@
             datatype: "json",
             mtype: 'Get',
             height: '200px',
-            colNames: ['','', 'Region Code*', 'Region Description*', 'Updated by', 'Updated Date'],
+            colNames: ['', 'Region Code*', 'Region Description*', 'Updated by', 'Updated Date'],
             colModel: [
-                {
-                    name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
-                    formatoptions: {
-                        keys: true,
-                        editbutton: false,
-                        editformbutton: false,
-                        delOptions:
-                        {
-                            onclickSubmit: function (options, rowid) {
-                                options.url = "/Home/DeleteRegionMaintenance"
-                            }        
-                        }
-                    }
-                },
                 { name: 'REGION_ID', key: true, index: 'REGION_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
                 { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
@@ -62,6 +48,7 @@
             viewrecords: true,
             loadonce: false,
             sortorder: "desc",
+            multiselect: true,
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellRegionMaintenance',
@@ -88,7 +75,23 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: true, search: false },
+                {},
+                {},
+                {
+                    closeOnEscape: true,
+                    closeAfterDelete: true,
+                    msg: "Are you sure you want to delete this record?",
+                    afterComplete: function (response) {
+                        if (response.responseText) {
+                            $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
+                        }
+                    },
+                    onclickSubmit: function (options, rowid) {
+                        options.url = "/Home/DeleteRegionMaintenance"
+                    } 
+                },
+        );
         $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,

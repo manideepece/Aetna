@@ -457,7 +457,7 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> DeleteTeamMaintenance(TeamMaintenance teamMaintenance)
+        public async Task<ActionResult> DeleteTeamMaintenance(string TeamMaintenanceID)
         {
             try
             {
@@ -468,7 +468,7 @@ namespace Aetna.Controllers
                     // Add an Accept header for JSON format.    
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    var myContent = JsonConvert.SerializeObject(teamMaintenance);
+                    var myContent = JsonConvert.SerializeObject(TeamMaintenanceID);
                     HttpResponseMessage response = client.PostAsync("api/aetna/DeleteTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {
@@ -537,7 +537,7 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> DeleteRegionMaintenance(Region region)
+        public async Task<ActionResult> DeleteRegionMaintenance(string REGION_ID)
         {
             try
             {
@@ -548,12 +548,12 @@ namespace Aetna.Controllers
                     // Add an Accept header for JSON format.    
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    var myContent = JsonConvert.SerializeObject(region);
+                    var myContent = JsonConvert.SerializeObject(REGION_ID);
                     HttpResponseMessage response = client.PostAsync("api/aetna/DeleteRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -739,7 +739,7 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> DeleteSubsegmentMaintenance(Subsegment subsegment)
+        public async Task<ActionResult> DeleteSubsegmentMaintenance(string SUB_SEGMENT_ID)
         {
             try
             {
@@ -750,7 +750,7 @@ namespace Aetna.Controllers
                     // Add an Accept header for JSON format.    
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    var myContent = JsonConvert.SerializeObject(subsegment);
+                    var myContent = JsonConvert.SerializeObject(SUB_SEGMENT_ID);
                     HttpResponseMessage response = client.PostAsync("api/aetna/DeleteSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {
@@ -931,7 +931,7 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> DeleteUserTeamMapping(UserTeamMapping userTeamMapping)
+        public async Task<ActionResult> DeleteUserTeamMapping(string USER_ID)
         {
             try
             {
@@ -942,7 +942,7 @@ namespace Aetna.Controllers
                     // Add an Accept header for JSON format.    
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    var myContent = JsonConvert.SerializeObject(userTeamMapping);
+                    var myContent = JsonConvert.SerializeObject(USER_ID);
                     HttpResponseMessage response = client.PostAsync("api/aetna/DeleteUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
                     {

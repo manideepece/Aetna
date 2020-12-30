@@ -407,46 +407,110 @@ begin
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------
-CREATE proc dbo.sp_SEC_Delete_Region_Maintenance
-@regionId varchar(5)
+ALTER proc [dbo].[sp_SEC_Delete_Region_Maintenance]
+@regionId varchar(255)
 as
 begin
+	
+	create table #IdsToDelete (REGION_ID int)
+
+	insert into #IdsToDelete
+	SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+	  FROM 
+	  ( 
+		SELECT 
+			n = CONVERT(XML, '<i>' 
+				+ REPLACE((SELECT STUFF((SELECT ',' + @regionId FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+				+ '</i>')
+	  ) AS a 
+	  CROSS APPLY n.nodes('i') AS y(i)
+
 	delete trs from BTT_SEC_TEAM_REG_SEG_MAPPING_N trs join BTT_SEC_REG_SEG_MAPPING_N rs on trs.REGION_SEGMENT_MAPPING_ID = rs.REGION_SEGMENT_MAPPING_ID
-	where REGION_ID = @regionId
+	where REGION_ID in (select * from #IdsToDelete)
 
-	delete from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = @regionId
+	delete from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID in (select * from #IdsToDelete)
 
-	delete from BTT_SEC_REG_LKP_N where REGION_ID = @regionId
+	delete from BTT_SEC_REG_LKP_N where REGION_ID in (select * from #IdsToDelete)
+
+	drop table #IdsToDelete
 end
 -------------------------------------------------------------------------------------------------------------------------------------
-CREATE proc dbo.sp_SEC_Delete_Subsegment_Maintenance
-@subsegmentId varchar(5)
+ALTER proc [dbo].[sp_SEC_Delete_Subsegment_Maintenance]
+@subsegmentId varchar(255)
 as
 begin
+	
+	create table #IdsToDelete (SUB_SEGMENT_ID int)
+
+	insert into #IdsToDelete
+	SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+	  FROM 
+	  ( 
+		SELECT 
+			n = CONVERT(XML, '<i>' 
+				+ REPLACE((SELECT STUFF((SELECT ',' + @subsegmentId FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+				+ '</i>')
+	  ) AS a 
+	  CROSS APPLY n.nodes('i') AS y(i)
+
 	delete trs from BTT_SEC_TEAM_REG_SEG_MAPPING_N trs join BTT_SEC_REG_SEG_MAPPING_N rs on trs.REGION_SEGMENT_MAPPING_ID = rs.REGION_SEGMENT_MAPPING_ID
-	where SUB_SEGMENT_ID = @subsegmentId
+	where SUB_SEGMENT_ID in (select * from #IdsToDelete)
 
-	delete from BTT_SEC_REG_SEG_MAPPING_N where SUB_SEGMENT_ID = @subsegmentId
+	delete from BTT_SEC_REG_SEG_MAPPING_N where SUB_SEGMENT_ID in (select * from #IdsToDelete)
 
-	delete from BTT_SEC_SUB_SEGMENT_LKP_N where SUB_SEGMENT_ID = @subsegmentId
+	delete from BTT_SEC_SUB_SEGMENT_LKP_N where SUB_SEGMENT_ID in (select * from #IdsToDelete)
+
+	drop table #IdsToDelete
 end
 --------------------------------------------------------------------------------------------------------------------------------------
-CREATE proc dbo.sp_SEC_Delete_User_Team_Mapping
-@userId varchar(18)
+ALTER proc [dbo].[sp_SEC_Delete_Team_Maintenance]
+@teamId varchar(max)
 as
 begin
-	delete from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID = @userId
+	
+	create table #IdsToDelete (TEAM_ID int)
 
-	delete from BTTSEC_USER_N where UDT_USER_ID = @userId
+	insert into #IdsToDelete
+	SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+	  FROM 
+	  ( 
+		SELECT 
+			n = CONVERT(XML, '<i>' 
+				+ REPLACE((SELECT STUFF((SELECT ',' + @teamId FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+				+ '</i>')
+	  ) AS a 
+	  CROSS APPLY n.nodes('i') AS y(i)
+
+	delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID in (select * from #IdsToDelete)
+
+	delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID in (select * from #IdsToDelete)
+
+	delete from BTT_SEC_TEAM_LKP_N where TEAM_ID in (select * from #IdsToDelete)
+
+	drop table #IdsToDelete
 end
 ----------------------------------------------------------------------------------------------------------------------------------------
-CREATE proc dbo.sp_SEC_Delete_Team_Maintenance
-@teamId varchar(18)
+ALTER proc [dbo].[sp_SEC_Delete_User_Team_Mapping]
+@userId varchar(max)
 as
 begin
-	delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId
 
-	delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId
+	create table #IdsToDelete (USER_ID varchar(100))
 
-	delete from BTT_SEC_TEAM_LKP_N where TEAM_ID = @teamId
+	insert into #IdsToDelete
+	SELECT rcsId = y.i.value('(./text())[1]', 'varchar(100)')             
+	  FROM 
+	  ( 
+		SELECT 
+			n = CONVERT(XML, '<i>' 
+				+ REPLACE((SELECT STUFF((SELECT ',' + @userId FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+				+ '</i>')
+	  ) AS a 
+	  CROSS APPLY n.nodes('i') AS y(i)
+
+	delete from BTT_SEC_USER_TEAM_MAPPING_N where USER_ID in (select * from #IdsToDelete)
+
+	delete from BTTSEC_USER_N where UDT_USER_ID in (select * from #IdsToDelete)
+
+	drop table #IdsToDelete
 end

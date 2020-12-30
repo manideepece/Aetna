@@ -29,22 +29,8 @@
             datatype: "json",
             mtype: 'Get',
             height: '400px',
-            colNames: ['','', 'Team Code*', 'Team Name*', 'Ctrl Cnt*', 'Reports', 'Region', 'Subsegment'],
+            colNames: ['', 'Team Code*', 'Team Name*', 'Ctrl Cnt*', 'Reports', 'Region', 'Subsegment'],
             colModel: [
-                {
-                    name: 'act', index: 'act', width: 10, align: 'center', search: false, sortable: false, formatter: 'actions',
-                    formatoptions: {
-                        keys: true,
-                        editbutton: false,
-                        editformbutton: false,
-                        delOptions:
-                        {
-                            onclickSubmit: function (options, rowid) {
-                                options.url = "/Home/DeleteTeamMaintenance"
-                            }
-                        }
-                    }
-                },
                 { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
                 { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
@@ -176,6 +162,7 @@
             viewrecords: true,
             //onSelectRow: editRow,
             sortorder: "desc",
+            multiselect: true,
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellTeamMaintenance',
@@ -201,7 +188,23 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: true, search: false },
+                {},
+                {},
+                {
+                    closeOnEscape: true,
+                    closeAfterDelete: true,
+                    msg: "Are you sure you want to delete this record?",
+                    afterComplete: function (response) {
+                        if (response.responseText) {
+                            $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
+                        }
+                    },
+                    onclickSubmit: function (options, rowid) {
+                        options.url = "/Home/DeleteTeamMaintenance"
+                    }
+                }
+            );
         //$("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
         //    { edit: false, add: true, del: false, refresh: false, search: false },
         //    {

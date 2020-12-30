@@ -29,22 +29,8 @@
             datatype: "json",
             mtype: 'Get',
             height: '300px',
-            colNames: ['','UserID*', 'Last Name*', 'First Name*', 'Employee Status*', 'Team Name'],
+            colNames: ['UserID*', 'Last Name*', 'First Name*', 'Employee Status*', 'Team Name'],
             colModel: [
-                {
-                    name: 'act', index: 'act', width: 4, align: 'center', search: false, sortable: false, formatter: 'actions',
-                    formatoptions: {
-                        keys: true,
-                        editbutton: false,
-                        editformbutton: false,
-                        delOptions:
-                        {
-                            onclickSubmit: function (options, rowid) {
-                                options.url = "/Home/DeleteUserTeamMapping"
-                            }
-                        }
-                    }
-                },
                 { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
@@ -95,6 +81,7 @@
             pgnext: "Next",
             viewrecords: true,
             sortorder: "desc",
+            multiselect: true,
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellUserTeamMapping',
@@ -120,7 +107,23 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
+            .navGrid('#pager2', { add: false, edit: false, del: true, search: false },
+                {},
+                {},
+                {
+                    closeOnEscape: true,
+                    closeAfterDelete: true,
+                    msg: "Are you sure you want to delete this record?",
+                    afterComplete: function (response) {
+                        if (response.responseText) {
+                            $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
+                        }
+                    },
+                    onclickSubmit: function (options, rowid) {
+                        options.url = "/Home/DeleteUserTeamMapping"
+                    }
+                }
+            );
         $("#UserTeamMappinggrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
