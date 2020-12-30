@@ -52,6 +52,14 @@
             cellEdit: true,
             cellsubmit: 'remote',
             cellurl: '/Home/EditCellSubsegmentMaintenance',
+            onPaging: function (pgButton) {
+                if (selectedRowId != null && selectedCellId != null) {
+                    $('#SubsegmentMaintenancegrid').saveCell(selectedRowId, selectedCellId);
+                    selectedRowId = null;
+                    selectedCellId = null;
+                    selectedCellValue = null;
+                }
+            },
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
                 var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
                 if (selectedRowId != null && selectedCellId != null && (selectedRowId != rowid || selectedCellId != iCol) && colData != selectedCellValue) {

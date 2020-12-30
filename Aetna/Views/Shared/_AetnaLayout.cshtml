@@ -44,6 +44,7 @@
 
         .ui-jqgrid tr.jqgrow td {
             white-space: break-spaces;
+            word-break: break-all;
         }
 
         .security-page {
@@ -65,7 +66,9 @@
         }
 
         .ui-jqgrid .ui-jqgrid-htable th div {
-            height: 20px;
+            height: auto !important;
+            white-space: break-spaces;
+            word-break: break-word;
         }
 
         .ui-widget-content {
@@ -81,8 +84,8 @@
             width: auto !important;
         }
 
-        .ui-jqgrid-htable {
-            width: 80% !important;
+        .ui-jqgrid-htable, .ui-jqgrid-bdiv, .ui-jqgrid-btable, .ui-jqgrid-pager {
+            width: 100% !important;
         }
 
         .navtable {
@@ -106,6 +109,10 @@
             border: 1px solid rgb(204, 204, 204);
             background-color: white;
             padding: 5px;
+        }
+
+        .ui-jqgrid .ui-jqgrid-hbox{
+            padding-right: 0px !important;
         }
     </style>
 </head>
