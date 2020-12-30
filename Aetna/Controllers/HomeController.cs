@@ -437,7 +437,7 @@ namespace Aetna.Controllers
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -473,11 +473,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -517,7 +517,7 @@ namespace Aetna.Controllers
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -557,7 +557,7 @@ namespace Aetna.Controllers
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -625,11 +625,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -675,11 +675,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -719,7 +719,7 @@ namespace Aetna.Controllers
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -755,11 +755,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -805,11 +805,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -907,11 +907,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -947,11 +947,11 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json("An Error Occured", JsonRequestBehavior.AllowGet);
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -982,7 +982,7 @@ namespace Aetna.Controllers
                     {
                         db.TeamMaintenances.Add(teamMaintenance);
                         db.SaveChanges();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -1019,7 +1019,7 @@ namespace Aetna.Controllers
                         record.Reports = teamMaintenance.Reports;
                         record.Subsegment = teamMaintenance.Subsegment;
                         db.SaveChanges();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -1072,7 +1072,7 @@ namespace Aetna.Controllers
                             record.Subsegment = teamMaintenance.Subsegment;
                         }
                         db.SaveChanges();
-                        return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
