@@ -201,15 +201,7 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
-                {},
-                {},
-                {},
-                {
-                    closeAfterSearch: true,
-                    closeAfterReset: true,
-                    closeOnEscape: true
-                });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
         //$("#TeamMaintenancegrid").jqGrid('navGrid', '#pager2',
         //    { edit: false, add: true, del: false, refresh: false, search: false },
         //    {
@@ -276,6 +268,8 @@
                 //}
             }
         );
+
+        $('#TeamMaintenancegrid').jqGrid('filterToolbar', { searchOnEnter: true, enableClear: false, stringResult: true, searchOperators: true });
 
         //$("#TeamMaintenancegrid_ilsave").click(function () {
         //    $("#TeamMaintenancegrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);

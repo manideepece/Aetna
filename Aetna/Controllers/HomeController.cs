@@ -1,5 +1,6 @@
 ﻿using Aetna.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,29 +57,54 @@ namespace Aetna.Controllers
                 var output = await response.Content.ReadAsStringAsync();
                 teamMaintenanceRecords = JsonConvert.DeserializeObject<List<TeamMaintenance>>(output);
             }
-            if (_search)
+            if (Request.Params["_search"] == "true")
             {
-                switch (searchField)
+                var searchFields = JsonConvert.DeserializeObject<SearchParameter>(Request.Params["filters"]);
+                foreach (var field in searchFields.rules)
                 {
-                    case "TeamCode":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamCode.Contains(searchString)).ToList();
-                        break;
-                    case "TeamName":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamName.Contains(searchString)).ToList();
-                        break;
-                    case "CtrlCnt":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.CtrlCnt == searchString).ToList();
-                        break;
-                    case "Reports":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Reports.Contains(searchString)).ToList();
-                        break;
-                    case "Region":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Region.Contains(searchString)).ToList();
-                        break;
-                    case "Subsegment":
-                        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Subsegment.Contains(searchString)).ToList();
-                        break;
+                    switch (field.field)
+                    {
+                        case "TeamCode":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamCode.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "TeamName":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamName.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "CtrlCnt":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.CtrlCnt == field.data).ToList();
+                            break;
+                        case "Reports":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Reports.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "Region":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Region.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "Subsegment":
+                            teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Subsegment.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                    }
                 }
+                //switch (searchField)
+                //{
+                //    case "TeamCode":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamCode.Contains(searchString)).ToList();
+                //        break;
+                //    case "TeamName":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.TeamName.Contains(searchString)).ToList();
+                //        break;
+                //    case "CtrlCnt":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.CtrlCnt == searchString).ToList();
+                //        break;
+                //    case "Reports":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Reports.Contains(searchString)).ToList();
+                //        break;
+                //    case "Region":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Region.Contains(searchString)).ToList();
+                //        break;
+                //    case "Subsegment":
+                //        teamMaintenanceRecords = teamMaintenanceRecords.Where(x => x.Subsegment.Contains(searchString)).ToList();
+                //        break;
+                //}
 
             }
             int totalRecords = teamMaintenanceRecords.Count();
@@ -111,8 +137,8 @@ namespace Aetna.Controllers
             int pageIndex = Convert.ToInt32(page) - 1;
             int pageSize = rows;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5862/");  
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));  
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = client.GetAsync("api/aetna/GetRegions").Result;  // Blocking call!
             var regions = new List<Region>();
             if (response.IsSuccessStatusCode)
@@ -120,21 +146,53 @@ namespace Aetna.Controllers
                 var output = await response.Content.ReadAsStringAsync();
                 regions = JsonConvert.DeserializeObject<List<Region>>(output);
             }
-            if (_search)
+            //if (_search)
+            //{
+            //    switch (searchField)
+            //    {
+            //        case "REGION_CD":
+            //            regions = regions.Where(x => x.REGION_CD.Contains(searchString)).ToList();
+            //            break;
+            //        case "REGION_DESCR":
+            //            regions = regions.Where(x => x.REGION_DESCR.Contains(searchString)).ToList();
+            //            break;
+            //        case "UPDT_BY_ID":
+            //            regions = regions.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
+            //            break;
+            //    }
+
+            //}
+            if (Request.Params["_search"] == "true")
             {
-                switch (searchField)
+                var searchFields = JsonConvert.DeserializeObject<SearchParameter>(Request.Params["filters"]);
+                foreach(var field in searchFields.rules)
                 {
-                    case "REGION_CD":
-                        regions = regions.Where(x => x.REGION_CD.Contains(searchString)).ToList();
-                        break;
-                    case "REGION_DESCR":
-                        regions = regions.Where(x => x.REGION_DESCR.Contains(searchString)).ToList();
-                        break;
-                    case "UPDT_BY_ID":
-                        regions = regions.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
-                        break;
+                    switch (field.field)
+                    {
+                        case "REGION_CD":
+                            regions = regions.Where(x => x.REGION_CD.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "REGION_DESCR":
+                            regions = regions.Where(x => x.REGION_DESCR.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "UPDT_BY_ID":
+                            regions = regions.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                    }
                 }
-                    
+                //switch (searchField)
+                //{
+                //    case "REGION_CD":
+                //        regions = regions.Where(x => x.REGION_CD.Contains(searchString)).ToList();
+                //        break;
+                //    case "REGION_DESCR":
+                //        regions = regions.Where(x => x.REGION_DESCR.Contains(searchString)).ToList();
+                //        break;
+                //    case "UPDT_BY_ID":
+                //        regions = regions.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
+                //        break;
+                //}
+
             }
             int totalRecords = regions.Count();
             var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
@@ -177,23 +235,42 @@ namespace Aetna.Controllers
                 var output = await response.Content.ReadAsStringAsync();
                 userTeamMappingRecords = JsonConvert.DeserializeObject<List<UserTeamMapping>>(output);
             }
-            if (_search)
+            if (Request.Params["_search"] == "true")
             {
-                switch (searchField)
+                var searchFields = JsonConvert.DeserializeObject<SearchParameter>(Request.Params["filters"]);
+                foreach (var field in searchFields.rules)
                 {
-                    case "USER_ID":
-                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.USER_ID.Contains(searchString)).ToList();
-                        break;
-                    case "FIRST_NAM":
-                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.FIRST_NAM.Contains(searchString)).ToList();
-                        break;
-                    case "LAST_NAM":
-                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.LAST_NAM.Contains(searchString)).ToList();
-                        break;
-                    case "TEAMS":
-                        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.TEAMS.Contains(searchString)).ToList();
-                        break;
+                    switch (field.field)
+                    {
+                        case "USER_ID":
+                            userTeamMappingRecords = userTeamMappingRecords.Where(x => x.USER_ID.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "FIRST_NAM":
+                            userTeamMappingRecords = userTeamMappingRecords.Where(x => x.FIRST_NAM.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "LAST_NAM":
+                            userTeamMappingRecords = userTeamMappingRecords.Where(x => x.LAST_NAM.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "TEAMS":
+                            userTeamMappingRecords = userTeamMappingRecords.Where(x => x.TEAMS.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                    }
                 }
+                //switch (searchField)
+                //{
+                //    case "USER_ID":
+                //        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.USER_ID.Contains(searchString)).ToList();
+                //        break;
+                //    case "FIRST_NAM":
+                //        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.FIRST_NAM.Contains(searchString)).ToList();
+                //        break;
+                //    case "LAST_NAM":
+                //        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.LAST_NAM.Contains(searchString)).ToList();
+                //        break;
+                //    case "TEAMS":
+                //        userTeamMappingRecords = userTeamMappingRecords.Where(x => x.TEAMS.Contains(searchString)).ToList();
+                //        break;
+                //}
 
             }
             int totalRecords = userTeamMappingRecords.Count();
@@ -223,20 +300,36 @@ namespace Aetna.Controllers
                 var output = await response.Content.ReadAsStringAsync();
                 subsegments = JsonConvert.DeserializeObject<List<Subsegment>>(output);
             }
-            if (_search)
+            if (Request.Params["_search"] == "true")
             {
-                switch (searchField)
+                var searchFields = JsonConvert.DeserializeObject<SearchParameter>(Request.Params["filters"]);
+                foreach (var field in searchFields.rules)
                 {
-                    case "SUB_SEGMENT_CD":
-                        subsegments = subsegments.Where(x => x.SUB_SEGMENT_CD.Contains(searchString)).ToList();
-                        break;
-                    case "SUB_SEGMENT_DESCR":
-                        subsegments = subsegments.Where(x => x.SUB_SEGMENT_DESCR.Contains(searchString)).ToList();
-                        break;
-                    case "UPDT_BY_ID":
-                        subsegments = subsegments.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
-                        break;
+                    switch (field.field)
+                    {
+                        case "SUB_SEGMENT_CD":
+                            subsegments = subsegments.Where(x => x.SUB_SEGMENT_CD.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "SUB_SEGMENT_DESCR":
+                            subsegments = subsegments.Where(x => x.SUB_SEGMENT_DESCR.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                        case "UPDT_BY_ID":
+                            subsegments = subsegments.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.ToLower().Contains(field.data.ToLower())).ToList();
+                            break;
+                    }
                 }
+                //switch (searchField)
+                //{
+                //    case "SUB_SEGMENT_CD":
+                //        subsegments = subsegments.Where(x => x.SUB_SEGMENT_CD.Contains(searchString)).ToList();
+                //        break;
+                //    case "SUB_SEGMENT_DESCR":
+                //        subsegments = subsegments.Where(x => x.SUB_SEGMENT_DESCR.Contains(searchString)).ToList();
+                //        break;
+                //    case "UPDT_BY_ID":
+                //        subsegments = subsegments.Where(x => x.UPDT_BY_ID != null && x.UPDT_BY_ID.Contains(searchString)).ToList();
+                //        break;
+                //}
 
             }
             int totalRecords = subsegments.Count();
@@ -954,30 +1047,30 @@ namespace Aetna.Controllers
                     using (var db = new AetnaContext())
                     {
                         var record = db.TeamMaintenances.Where(x => x.TeamMaintenanceID == teamMaintenance.TeamMaintenanceID).FirstOrDefault();
-                        if(teamMaintenance.TeamCode != null)
+                        if (teamMaintenance.TeamCode != null)
                         {
                             record.TeamCode = teamMaintenance.TeamCode;
                         }
-                        else if(teamMaintenance.TeamName != null)
+                        else if (teamMaintenance.TeamName != null)
                         {
                             record.TeamName = teamMaintenance.TeamName;
                         }
-                        else if(teamMaintenance.CtrlCnt != null)
+                        else if (teamMaintenance.CtrlCnt != null)
                         {
                             record.CtrlCnt = teamMaintenance.CtrlCnt;
                         }
-                        else if(teamMaintenance.Region != null)
+                        else if (teamMaintenance.Region != null)
                         {
                             record.Region = teamMaintenance.Region;
                         }
-                        else if(teamMaintenance.Reports != null)
+                        else if (teamMaintenance.Reports != null)
                         {
                             record.Reports = teamMaintenance.Reports;
                         }
-                        else if(teamMaintenance.Subsegment != null)
+                        else if (teamMaintenance.Subsegment != null)
                         {
                             record.Subsegment = teamMaintenance.Subsegment;
-                        }    
+                        }
                         db.SaveChanges();
                         return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
                     }

@@ -88,15 +88,7 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
-                {},
-                {},
-                {},
-                {
-                    closeAfterSearch: true,
-                    closeAfterReset: true,
-                    closeOnEscape: true
-                });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
         $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
@@ -140,6 +132,8 @@
                 }
             }
         );
+
+        $('#RegionMaintenancegrid').jqGrid('filterToolbar', { searchOnEnter: true, enableClear: false, stringResult: true, searchOperators: true });
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {

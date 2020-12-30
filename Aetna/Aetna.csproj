@@ -134,6 +134,7 @@
     <Compile Include="Models\AetnaContext.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Report.cs" />
+    <Compile Include="Models\SearchParameter.cs" />
     <Compile Include="Models\Subsegment.cs" />
     <Compile Include="Models\Team.cs" />
     <Compile Include="Models\TeamMaintenance.cs" />

@@ -120,15 +120,7 @@
             },
             autowidth: true
         })
-            .navGrid('#pager2', { add: false, edit: false, del: false, search: true },
-                {},
-                {},
-                {},
-                {
-                    closeAfterSearch: true,
-                    closeAfterReset: true,
-                    closeOnEscape: true
-                });
+            .navGrid('#pager2', { add: false, edit: false, del: false, search: false });
         $("#UserTeamMappinggrid").jqGrid('inlineNav', '#pager2',
             {
                 edit: false,
@@ -153,6 +145,8 @@
                 }
             }
         );
+
+        $('#UserTeamMappinggrid').jqGrid('filterToolbar', { searchOnEnter: true, enableClear: false, stringResult: true, searchOperators: true });
 
         //$("#UserTeamMappinggrid_ilsave").click(function () {
         //    $("#UserTeamMappinggrid").trigger("reloadGrid", [{ current: true, fromServer: true }]);
