@@ -423,6 +423,7 @@ namespace Aetna.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    teamMaintenance.ModifiedUser = "System";
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("http://localhost:5862/");
                     // Add an Accept header for JSON format.    
@@ -433,7 +434,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json(output, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -473,7 +474,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -503,6 +504,7 @@ namespace Aetna.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    region.ModifiedUser = "System";
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("http://localhost:5862/");
                     // Add an Accept header for JSON format.    
@@ -513,7 +515,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json(output, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -553,7 +555,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -705,6 +707,7 @@ namespace Aetna.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    subsegment.ModifiedUser = "System";
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("http://localhost:5862/");
                     // Add an Accept header for JSON format.    
@@ -715,7 +718,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json(output, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -755,7 +758,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -835,6 +838,7 @@ namespace Aetna.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    userTeamMapping.ModifiedUser = "System";
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("http://localhost:5862/");
                     // Add an Accept header for JSON format.    
@@ -947,7 +951,7 @@ namespace Aetna.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var output = await response.Content.ReadAsStringAsync();
-                        return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
                     }
                     else
                     {

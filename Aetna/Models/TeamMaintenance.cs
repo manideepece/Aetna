@@ -16,6 +16,7 @@ namespace Aetna.Models
         public string Subsegment { get; set; }
         public string Column { get; set; }
         public string Value { get; set; }
+        public string ModifiedUser { get; set; }
     }
 
     public class TeamMaintenanceEdit

@@ -43,9 +43,9 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool AddTeamMaintenance(TeamMaintenance teamMaintenance)
+        public string AddTeamMaintenance(TeamMaintenance teamMaintenance)
         {
-            var output = false;
+            string result = "";
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
             using (var con = new SqlConnection(conn))
             {
@@ -61,20 +61,21 @@ namespace AetnaAPI.Repositories
                     var reportsParam = new SqlParameter("@reports", teamMaintenance.Reports);
                     var regionsParam = new SqlParameter("@regions", teamMaintenance.Region);
                     var subsegmentsParam = new SqlParameter("@subsegments", teamMaintenance.Subsegment);
+                    var modifiedUserParam = new SqlParameter("@modifiedUser", teamMaintenance.ModifiedUser);
                     cmd.Parameters.Add(teamCodeparam);
                     cmd.Parameters.Add(teamDescriptionParam);
                     cmd.Parameters.Add(ctrlCountParam);
                     cmd.Parameters.Add(reportsParam);
                     cmd.Parameters.Add(regionsParam);
                     cmd.Parameters.Add(subsegmentsParam);
+                    cmd.Parameters.Add(modifiedUserParam);
 
-                    int result = cmd.ExecuteNonQuery();
-                    output = true;
+                    result = Convert.ToString(cmd.ExecuteScalar());
 
                     con.Close();
                 }
             }
-            return output;
+            return result;
         }
 
         public bool EditTeamMaintenance(TeamMaintenance teamMaintenance)
@@ -129,9 +130,9 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool AddRegionMaintenance(RegionModel region)
+        public string AddRegionMaintenance(RegionModel region)
         {
-            var output = false;
+            string result = "";
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
             using (var con = new SqlConnection(conn))
             {
@@ -143,16 +144,17 @@ namespace AetnaAPI.Repositories
 
                     var regionCodeparam = new SqlParameter("@regionCode", region.REGION_CD);
                     var regionDescriptionParam = new SqlParameter("@regionDescription", region.REGION_DESCR);
+                    var modifiedUserParam = new SqlParameter("@modifiedUser", region.ModifiedUser);
                     cmd.Parameters.Add(regionCodeparam);
                     cmd.Parameters.Add(regionDescriptionParam);
+                    cmd.Parameters.Add(modifiedUserParam);
 
-                    int result = cmd.ExecuteNonQuery();
-                    output = true;
+                    result = Convert.ToString(cmd.ExecuteScalar());
 
                     con.Close();
                 }
             }
-            return output;
+            return result;
         }
 
         public bool EditRegionMaintenance(RegionModel region)
@@ -207,9 +209,9 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
-        public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
+        public string AddSubsegmentMaintenance(SubsegmentModel subsegment)
         {
-            var output = false;
+            string result = "";
             var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
             using (var con = new SqlConnection(conn))
             {
@@ -221,16 +223,17 @@ namespace AetnaAPI.Repositories
 
                     var subsegmentCodeparam = new SqlParameter("@subSegmentCode", subsegment.SUB_SEGMENT_CD);
                     var subsegmentDescriptionParam = new SqlParameter("@subSegmentDescription", subsegment.SUB_SEGMENT_DESCR);
+                    var modifiedUserParam = new SqlParameter("@modifiedUser", subsegment.ModifiedUser);
                     cmd.Parameters.Add(subsegmentCodeparam);
                     cmd.Parameters.Add(subsegmentDescriptionParam);
+                    cmd.Parameters.Add(modifiedUserParam);
 
-                    int result = cmd.ExecuteNonQuery();
-                    output = true;
+                    result = Convert.ToString(cmd.ExecuteScalar());
 
                     con.Close();
                 }
             }
-            return output;
+            return result;
         }
 
         public bool EditSubsegmentMaintenance(SubsegmentModel subsegment)
@@ -333,11 +336,13 @@ namespace AetnaAPI.Repositories
                     var lastNameParam = new SqlParameter("@LastName", userTeamMapping.LAST_NAM);
                     var employeeStatusParam = new SqlParameter("@employeeStatus", userTeamMapping.EMP_STS_CD);
                     var teamsParam = new SqlParameter("@teams", userTeamMapping.TEAMS);
+                    var modifiedUserParam = new SqlParameter("@modifiedUser", userTeamMapping.ModifiedUser);
                     cmd.Parameters.Add(userIdParam);
                     cmd.Parameters.Add(firstNameParam);
                     cmd.Parameters.Add(lastNameParam);
                     cmd.Parameters.Add(employeeStatusParam);
                     cmd.Parameters.Add(teamsParam);
+                    cmd.Parameters.Add(modifiedUserParam);
 
                     result = Convert.ToString(cmd.ExecuteScalar());
 

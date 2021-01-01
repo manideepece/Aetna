@@ -15,5 +15,6 @@ namespace AetnaAPI.Models
         public string TEAMS { get; set; }
         public string Column { get; set; }
         public string Value { get; set; }
+        public string ModifiedUser { get; set; }
     }
 }

@@ -175,9 +175,13 @@
                 }
             },
             beforeEditCell: function (rowid, cellname, value, iRow, iCol) {
+                $("#infocnt_custom").text('')
                 var colData = $("#" + selectedRowId).find('td').eq(selectedCellId).text();
                 if (selectedRowId != null && selectedCellId != null && (selectedRowId != rowid || selectedCellId != iCol) && colData != selectedCellValue) {
                     $('#TeamMaintenancegrid').saveCell(selectedRowId, selectedCellId);
+                    if (colData == '') {
+                        $("#TeamMaintenancegrid").jqGrid('setCell', selectedRowId, selectedCellId, selectedCellValue);
+                    }
                 }
             },
             afterEditCell: function (id, name, val, iRow, iCol) {
@@ -258,9 +262,7 @@
                         console.log(JSON.parse(response.responseText));
                         $("#infocnt_custom").text(JSON.parse(response.responseText).replace(/\"/g, ""));
                         var $this = $(this); // grid
-                        setTimeout(function () {
-                            $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
-                        }, 50);
+                        $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
                     }
                 }
                 //onSelectRow: editRow,
@@ -290,6 +292,10 @@
             info_dialog: function (caption, content, c_b, modalopt) {
                 $("#infocnt_custom").text(content.replace('*', ''))
             }
+        });
+
+        $("#del_TeamMaintenancegrid, #refresh_TeamMaintenancegrid, #TeamMaintenancegrid_ilcancel").click(function () {
+            $("#infocnt_custom").text('');
         });
 
         function editRow(id) {

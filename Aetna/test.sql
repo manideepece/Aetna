@@ -66,72 +66,84 @@ end
 
 -------------------------------------------------------------------------------------
 
-alter proc sp_SEC_Add_Team_Maintenance
+ALTER proc [dbo].[sp_SEC_Add_Team_Maintenance]
 @teamCode varchar(5),
 @teamDescription varchar(100),
 @ctrlCount int,
 @reports varchar(255),
 @regions varchar(255),
-@subsegments varchar(255)
+@subsegments varchar(255),
+@modifiedUser varchar(100)
 as
 begin
-	insert into BTT_SEC_TEAM_LKP_N values (@teamCode, @teamDescription,@ctrlCount,'System',GETDATE(),'System',GETDATE())
-	declare @id int = @@identity
+	
+	if exists (select * from BTT_SEC_TEAM_LKP_N where LTRIM(RTRIM(TEAM_CD)) = @teamCode)
+	begin
+		SELECT 'Team Code already exists!'
+	end
+	else
+	begin
+		insert into BTT_SEC_TEAM_LKP_N values (@teamCode, @teamDescription,@ctrlCount,@modifiedUser,GETDATE(),@modifiedUser,GETDATE())
+		declare @id int = @@identity
 
-	create table #reports (Report_CD varchar(2))
+		create table #reports (Report_CD varchar(2))
 
-	insert into #reports
-	SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
-	  FROM 
-	  ( 
-		SELECT 
-			n = CONVERT(XML, '<i>' 
-				+ REPLACE((SELECT STUFF((SELECT ',' + @reports FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
-				+ '</i>')
-	  ) AS a 
-	  CROSS APPLY n.nodes('i') AS y(i)
+		insert into #reports
+		SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @reports FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
 
-	insert into BTT_SEC_TEAM_RPT_MAPPING_N
-	select @id, rpt.Report_CD,'System',GETDATE(),'System',GETDATE() 
-	from #reports rep join BTTRPT_NAM_LB_N rpt on rep.Report_CD = rpt.Report_CD 
+		insert into BTT_SEC_TEAM_RPT_MAPPING_N
+		select @id, rpt.Report_CD,@modifiedUser,GETDATE(),@modifiedUser,GETDATE() 
+		from #reports rep join BTTRPT_NAM_LB_N rpt on rep.Report_CD = rpt.Report_CD 
 
-	drop table #reports
+		drop table #reports
 
-	create table #regions (REGION_ID int)
+		create table #regions (REGION_ID int)
 
-	insert into #regions
-	SELECT rcsId = y.i.value('(./text())[1]', 'int')             
-	  FROM 
-	  ( 
-		SELECT 
-			n = CONVERT(XML, '<i>' 
-				+ REPLACE((SELECT STUFF((SELECT ',' + @regions FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
-				+ '</i>')
-	  ) AS a 
-	  CROSS APPLY n.nodes('i') AS y(i)
+		insert into #regions
+		SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @regions FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
 
-	create table #subSegments (SUB_SEGMENT_ID int)
+		create table #subSegments (SUB_SEGMENT_ID int)
 
-	insert into #subSegments
-	SELECT rcsId = y.i.value('(./text())[1]', 'int')             
-	  FROM 
-	  ( 
-		SELECT 
-			n = CONVERT(XML, '<i>' 
-				+ REPLACE((SELECT STUFF((SELECT ',' + @subsegments FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
-				+ '</i>')
-	  ) AS a 
-	  CROSS APPLY n.nodes('i') AS y(i)
+		insert into #subSegments
+		SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @subsegments FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
 
-	insert into BTT_SEC_TEAM_REG_SEG_MAPPING_N
-	select @id, 
-			(select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID),
-			'System',GETDATE(),'System',GETDATE() from (select * from #regions cross join #subSegments) tmp
-			where (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID)
-			is not null
+		insert into BTT_SEC_TEAM_REG_SEG_MAPPING_N
+		select @id, 
+				(select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID),
+				@modifiedUser,GETDATE(),@modifiedUser,GETDATE() from (select * from #regions cross join #subSegments) tmp
+				where (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID)
+				is not null
 
-	drop table #regions
-	drop table #subSegments
+		drop table #regions
+		drop table #subSegments
+
+		SELECT 'Saved Successfully!'
+	end
+	
 end
 
 ------------------------------------------------------------------------------------------------------
@@ -238,17 +250,27 @@ end
 
 ---------------------------------------------------------------------------------------------------------
 
-create proc sp_SEC_Add_Region_Maintenance
+ALTER proc [dbo].[sp_SEC_Add_Region_Maintenance]
 @regionCode varchar(5),
-@regionDescription varchar(30)
+@regionDescription varchar(30),
+@modifiedUser varchar(100)
 as
 begin
-	insert into BTT_SEC_REG_LKP_N values (@regionCode, @regionDescription,'System',GETDATE(),'System',GETDATE())
-	declare @id int = @@identity
+	if exists (select * from BTT_SEC_REG_LKP_N where LTRIM(RTRIM(REGION_CD)) = @regionCode)
+	begin
+		SELECT 'Region Code already exists'
+	end
+	else
+	begin
+		insert into BTT_SEC_REG_LKP_N values (@regionCode, @regionDescription,@modifiedUser,GETDATE(),@modifiedUser,GETDATE())
+		declare @id int = @@identity
 
-	insert into BTT_SEC_REG_SEG_MAPPING_N
-	select @id, SUB_SEGMENT_ID, 'System', GETDATE(), 'System', GETDATE()
-	from BTT_SEC_SUB_SEGMENT_LKP_N reg
+		insert into BTT_SEC_REG_SEG_MAPPING_N
+		select @id, SUB_SEGMENT_ID, @modifiedUser, GETDATE(), @modifiedUser, GETDATE()
+		from BTT_SEC_SUB_SEGMENT_LKP_N reg
+
+		SELECT 'Saved Successfully!'
+	end
 end
 
 -----------------------------------------------------------------------------------------------------------
@@ -271,19 +293,28 @@ end
 
 ---------------------------------------------------------------------------------------
 
-create proc sp_SEC_Add_Subsegment_Maintenance
+ALTER proc [dbo].[sp_SEC_Add_Subsegment_Maintenance]
 @subSegmentCode varchar(5),
-@subSegmentDescription varchar(30)
+@subSegmentDescription varchar(30),
+@modifiedUser varchar(100)
 as
 begin
-	insert into BTT_SEC_SUB_SEGMENT_LKP_N values (@subSegmentCode, @subSegmentDescription, 'N', 'System',GETDATE(),'System',GETDATE())
-	declare @id int = @@identity
 
-	insert into BTT_SEC_REG_SEG_MAPPING_N
-	select REGION_ID, @id, 'System', GETDATE(), 'System', GETDATE()
-	from BTT_SEC_REG_LKP_N reg
+	if exists (select * from BTT_SEC_SUB_SEGMENT_LKP_N where LTRIM(RTRIM(SUB_SEGMENT_CD)) = @subSegmentCode)
+	begin
+		SELECT 'Subsegment Code already exists'
+	end
+	else
+	begin
+		insert into BTT_SEC_SUB_SEGMENT_LKP_N values (@subSegmentCode, @subSegmentDescription, 'N', @modifiedUser,GETDATE(),@modifiedUser,GETDATE())
+		declare @id int = @@identity
 
-end
+		insert into BTT_SEC_REG_SEG_MAPPING_N
+		select REGION_ID, @id, @modifiedUser, GETDATE(), @modifiedUser, GETDATE()
+		from BTT_SEC_REG_LKP_N reg
+
+		SELECT 'Saved Successfully!'
+	end
 -----------------------------------------------------------------------------------------
 
 create proc sp_SEC_Edit_Subsegment_Maintenance
@@ -332,38 +363,46 @@ begin
 end
 
 --------------------------------------------------------------------------------------------------------------
-create proc sp_SEC_Add_User_Team_Mapping
+ALTER proc [dbo].[sp_SEC_Add_User_Team_Mapping]
 @userId varchar(18),
 @firstName varchar(15),
 @LastName varchar(25),
 @employeeStatus varchar(1),
-@teams varchar(255)
+@teams varchar(255),
+@modifiedUser varchar(100)
 as
 begin
-	select * from BTTSEC_USER_N
-	SELECT * FROM BTT_SEC_TEAM_LKP_N
-	insert into BTTSEC_USER_N values (@userId, @firstName,@LastName,'','A','NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', GETDATE() + 60, 'ALL', 'System',GETDATE(),'System',GETDATE())
+	
+	if exists (select * from BTTSEC_USER_N where LTRIM(RTRIM(UDT_USER_ID)) = @userId)
+	begin
+		SELECT 'User Id already exists'
+	end
+	else
+	begin
+		insert into BTTSEC_USER_N values (@userId, @firstName,@LastName,'','A','NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', 'NewAccount', GETDATE() + 60, 'ALL', GETDATE(),@modifiedUser,GETDATE(),@modifiedUser)
 
-	create table #teams (TEAM_ID int)
+		create table #teams (TEAM_ID int)
 
-	insert into #teams
-	SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
-	  FROM 
-	  ( 
-		SELECT 
-			n = CONVERT(XML, '<i>' 
-				+ REPLACE((SELECT STUFF((SELECT ',' + @teams FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
-				+ '</i>')
-	  ) AS a 
-	  CROSS APPLY n.nodes('i') AS y(i)
+		insert into #teams
+		SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @teams FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
 
-	insert into BTT_SEC_USER_TEAM_MAPPING_N
-	select @userId, team.TEAM_ID,'System',GETDATE(),'System',GETDATE() 
-	from #teams team 
+		insert into BTT_SEC_USER_TEAM_MAPPING_N
+		select @userId, team.TEAM_ID,@modifiedUser,GETDATE(),@modifiedUser,GETDATE() 
+		from #teams team 
 
-	drop table #teams
+		drop table #teams
+
+		SELECT 'Saved Successfully!'
+	end
 end
-
 --------------------------------------------------------------------------------------------------------------
 
 ALTER proc ddbo.sp_SEC_Add_User_Team_Mapping

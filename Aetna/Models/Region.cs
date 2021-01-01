@@ -16,5 +16,6 @@ namespace Aetna.Models
         public DateTime? UPDT_TMSTMP { get; set; }
         public string Column { get; set; }
         public string Value { get; set; }
+        public string ModifiedUser { get; set; }
     }
 }

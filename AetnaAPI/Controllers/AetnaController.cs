@@ -19,7 +19,7 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
-        public bool AddTeamMaintenance(TeamMaintenance teamMaintenance)
+        public string AddTeamMaintenance(TeamMaintenance teamMaintenance)
         {
             var repository = new DataAccess();
             var output = repository.AddTeamMaintenance(teamMaintenance);
@@ -43,7 +43,7 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
-        public bool AddRegionMaintenance(RegionModel region)
+        public string AddRegionMaintenance(RegionModel region)
         {
             var repository = new DataAccess();
             var output = repository.AddRegionMaintenance(region);
@@ -67,7 +67,7 @@ namespace AetnaAPI.Controllers
         }
 
         [HttpPost]
-        public bool AddSubsegmentMaintenance(SubsegmentModel subsegment)
+        public string AddSubsegmentMaintenance(SubsegmentModel subsegment)
         {
             var repository = new DataAccess();
             var output = repository.AddSubsegmentMaintenance(subsegment);
