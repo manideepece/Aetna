@@ -106,6 +106,42 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public bool EditTeamMaintenanceNew(TeamMaintenance teamMaintenance)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_Team_Maintenance_New"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var teamIdparam = new SqlParameter("@teamId", teamMaintenance.TeamMaintenanceID);
+                    var teamCodeParam = new SqlParameter("@teamCode", teamMaintenance.TeamCode);
+                    var teamNameParam = new SqlParameter("@teamName", teamMaintenance.TeamName);
+                    var ctrlCountParam = new SqlParameter("@ctrlCount", teamMaintenance.CtrlCnt);
+                    var reportsParam = new SqlParameter("@reports", teamMaintenance.Reports);
+                    var regionsParam = new SqlParameter("@regions", teamMaintenance.Region);
+                    var subsegmentsParam = new SqlParameter("@subsegments", teamMaintenance.Subsegment);
+                    cmd.Parameters.Add(teamIdparam);
+                    cmd.Parameters.Add(teamCodeParam);
+                    cmd.Parameters.Add(teamNameParam);
+                    cmd.Parameters.Add(ctrlCountParam);
+                    cmd.Parameters.Add(reportsParam);
+                    cmd.Parameters.Add(regionsParam);
+                    cmd.Parameters.Add(subsegmentsParam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public bool DeleteTeamMaintenance(string TeamMaintenanceID)
         {
             var output = false;

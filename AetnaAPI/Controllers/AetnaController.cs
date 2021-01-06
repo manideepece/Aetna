@@ -30,7 +30,7 @@ namespace AetnaAPI.Controllers
         public bool EditTeamMaintenance(TeamMaintenance teamMaintenance)
         {
             var repository = new DataAccess();
-            var output = repository.EditTeamMaintenance(teamMaintenance);
+            var output = repository.EditTeamMaintenanceNew(teamMaintenance);
             return output;
         }
 

@@ -553,3 +553,95 @@ begin
 
 	drop table #IdsToDelete
 end
+-----------------------------------------------------------------------------------------------------------------------------------------
+ALTER proc [dbo].[sp_SEC_Edit_Team_Maintenance_New]
+@teamId int,
+@teamCode varchar(5),
+@teamName varchar(100),
+@ctrlCount int,
+@reports varchar(255),
+@regions varchar(255),
+@subsegments varchar(255)
+as
+begin
+	
+		create table #reports (Report_CD varchar(2))
+
+		insert into #reports
+		SELECT rcsId = y.i.value('(./text())[1]', 'varchar(2)')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @reports FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
+
+
+		create table #regions (REGION_ID int)
+
+		insert into #regions
+		SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @regions FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
+
+
+		create table #subSegments (SUB_SEGMENT_ID int)
+
+		insert into #subSegments
+		SELECT rcsId = y.i.value('(./text())[1]', 'int')             
+		  FROM 
+		  ( 
+			SELECT 
+				n = CONVERT(XML, '<i>' 
+					+ REPLACE((SELECT STUFF((SELECT ',' + @subsegments FOR XML PATH('')),1,1,'')), ',' , '</i><i>') 
+					+ '</i>')
+		  ) AS a 
+		  CROSS APPLY n.nodes('i') AS y(i)
+		
+		
+		Update BTT_SEC_TEAM_LKP_N set TEAM_CD = @teamCode, TEAM_DESCR = @teamName, CTRL_COUNT = @ctrlCount where TEAM_ID = @teamId
+	
+		insert into BTT_SEC_TEAM_RPT_MAPPING_N
+		select @teamId, rpt.Report_CD,'System',GETDATE(),'System',GETDATE() 
+		from #reports rep join BTTRPT_NAM_LB_N rpt on rep.Report_CD = rpt.Report_CD
+		where rpt.Report_CD not in (select distinct REPORT_CD from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId)
+
+		delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId and REPORT_CD not in (select * from #reports)
+		
+
+		  insert into BTT_SEC_TEAM_REG_SEG_MAPPING_N
+		  select @teamId, 
+		  (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID),
+		  'System',GETDATE(),'System',GETDATE() from 
+		  (select * from #regions cross join (select distinct SUB_SEGMENT_ID from (select SUB_SEGMENT_ID from BTT_SEC_REG_SEG_MAPPING_N rs join BTT_SEC_TEAM_REG_SEG_MAPPING_N trs on rs.REGION_SEGMENT_MAPPING_ID = trs.REGION_SEGMENT_MAPPING_ID where TEAM_ID = @teamId union select * from #subSegments)b)a) tmp
+		  where REGION_ID not in (select distinct REGION_ID from BTT_SEC_REG_SEG_MAPPING_N rs join BTT_SEC_TEAM_REG_SEG_MAPPING_N trs on rs.REGION_SEGMENT_MAPPING_ID = trs.REGION_SEGMENT_MAPPING_ID where TEAM_ID = @teamId) 
+		  and (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID) is not null
+
+		  delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId and REGION_SEGMENT_MAPPING_ID not in
+		  (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N rs join #regions reg on rs.REGION_ID = reg.REGION_ID )
+
+
+
+		  insert into BTT_SEC_TEAM_REG_SEG_MAPPING_N
+		  select @teamId, 
+		  (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID),
+		  'System',GETDATE(),'System',GETDATE() from 
+		  (select * from #subSegments cross join (select distinct REGION_ID from (select REGION_ID from BTT_SEC_REG_SEG_MAPPING_N rs join BTT_SEC_TEAM_REG_SEG_MAPPING_N trs on rs.REGION_SEGMENT_MAPPING_ID = trs.REGION_SEGMENT_MAPPING_ID where TEAM_ID = @teamId union select * from #regions)b)a) tmp
+		  where SUB_SEGMENT_ID not in (select distinct SUB_SEGMENT_ID from BTT_SEC_REG_SEG_MAPPING_N rs join BTT_SEC_TEAM_REG_SEG_MAPPING_N trs on rs.REGION_SEGMENT_MAPPING_ID = trs.REGION_SEGMENT_MAPPING_ID where TEAM_ID = @teamId)
+		  AND (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N where REGION_ID = tmp.REGION_ID and SUB_SEGMENT_ID = tmp.SUB_SEGMENT_ID) is not null
+
+		 delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId and REGION_SEGMENT_MAPPING_ID not in
+		 (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N rs join #subSegments seg on rs.SUB_SEGMENT_ID = seg.SUB_SEGMENT_ID )
+
+		 drop table #reports
+		 drop table #regions
+		 drop table #subSegments
+end

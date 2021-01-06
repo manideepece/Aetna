@@ -423,6 +423,12 @@ namespace Aetna.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    string oper = Request.Form["oper"];
+                    if(oper == "edit")
+                    {
+                        teamMaintenance.TeamMaintenanceID = Convert.ToInt32(Request.Form["TeamMaintenanceID"]);
+                        return await EditTeamMaintenance(teamMaintenance);
+                    }
                     teamMaintenance.ModifiedUser = "System";
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("http://localhost:5862/");
@@ -1006,24 +1012,39 @@ namespace Aetna.Controllers
         }
 
         [HttpPost]
-        public JsonResult EditTeamMaintenance(TeamMaintenance teamMaintenance)
+        public async Task<ActionResult> EditTeamMaintenance(TeamMaintenance teamMaintenance)
         {
             StringBuilder msg = new StringBuilder();
             try
             {
                 if (ModelState.IsValid)
                 {
-                    using (var db = new AetnaContext())
+                    //using (var db = new AetnaContext())
+                    //{
+                    //    var record = db.TeamMaintenances.Where(x => x.TeamMaintenanceID == teamMaintenance.TeamMaintenanceID).FirstOrDefault();
+                    //    record.TeamCode = teamMaintenance.TeamCode;
+                    //    record.TeamName = teamMaintenance.TeamName;
+                    //    record.CtrlCnt = teamMaintenance.CtrlCnt;
+                    //    record.Region = teamMaintenance.Region;
+                    //    record.Reports = teamMaintenance.Reports;
+                    //    record.Subsegment = teamMaintenance.Subsegment;
+                    //    db.SaveChanges();
+                    //    return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                    //}
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var myContent = JsonConvert.SerializeObject(teamMaintenance);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/EditTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
                     {
-                        var record = db.TeamMaintenances.Where(x => x.TeamMaintenanceID == teamMaintenance.TeamMaintenanceID).FirstOrDefault();
-                        record.TeamCode = teamMaintenance.TeamCode;
-                        record.TeamName = teamMaintenance.TeamName;
-                        record.CtrlCnt = teamMaintenance.CtrlCnt;
-                        record.Region = teamMaintenance.Region;
-                        record.Reports = teamMaintenance.Reports;
-                        record.Subsegment = teamMaintenance.Subsegment;
-                        db.SaveChanges();
+                        var output = await response.Content.ReadAsStringAsync();
                         return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
                     }
                 }
                 else

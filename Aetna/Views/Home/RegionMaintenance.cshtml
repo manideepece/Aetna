@@ -49,9 +49,9 @@
             loadonce: false,
             sortorder: "desc",
             multiselect: true,
-            cellEdit: true,
-            cellsubmit: 'remote',
-            cellurl: '/Home/EditCellRegionMaintenance',
+            //cellEdit: true,
+            //cellsubmit: 'remote',
+            //cellurl: '/Home/EditCellRegionMaintenance',
             onPaging: function (pgButton) {
                 if (selectedRowId != null && selectedCellId != null) {
                     $('#RegionMaintenancegrid').saveCell(selectedRowId, selectedCellId);
@@ -106,7 +106,7 @@
         );
         $("#RegionMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
-                edit: false,
+                edit: true,
                 edittext: "Edit",
                 add: true,
                 addtext: "Add",
@@ -146,7 +146,7 @@
             }
         );
 
-        $('#RegionMaintenancegrid').jqGrid('filterToolbar', { searchOnEnter: true, enableClear: false, stringResult: true, searchOperators: true });
+        $('#RegionMaintenancegrid').jqGrid('filterToolbar', { searchOnEnter: false, enableClear: true, stringResult: true, searchOperators: true });
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {
@@ -157,6 +157,8 @@
         $("#del_RegionMaintenancegrid, #refresh_RegionMaintenancegrid, #RegionMaintenancegrid_ilcancel").click(function () {
             $("#infocnt_custom").text('');
         });
+
+        $(".ui-search-toolbar input[type='text']").closest("div").append("<span class='glyphicon glyphicon-search' style='left:3px;'></span>");
 
         function editRow(id) {
             if (id && id !== lastSelection) {

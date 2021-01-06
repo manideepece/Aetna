@@ -175,6 +175,8 @@
             $("#infocnt_custom").text('');
         });
 
+        $(".ui-search-toolbar input[type='text']").closest("div").append("<span class='glyphicon glyphicon-search' style='left:3px;'></span>");
+
         function editRow(id) {
             if (id && id !== lastSelection) {
                 var grid = $("#UserTeamMappinggrid");

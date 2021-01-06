@@ -36,7 +36,7 @@
                 { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 {
-                    name: 'Reports', index: 'Reports', width: 50, editable: true, edittype: "select",
+                    name: 'Reports', index: 'Reports', width: 50, editable: true, editrules: { required: true }, edittype: "select",
                     editoptions: {
                         dataUrl: '/Home/GetAllReports',
                         buildSelect: function (data) {
@@ -64,14 +64,14 @@
                                     checkAllText: 'Check All',
                                     uncheckAllText: 'Uncheck All'
                                 });
-                            }, 50);
+                            }, 1000);
                         },
                         stype: 'select',
                     },
                     search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 },
                 {
-                    name: 'Region', index: 'Region', width: 30, editable: true, edittype: "select",
+                    name: 'Region', index: 'Region', width: 30, editable: true, editrules: { required: true }, edittype: "select",
                     //editoptions: {
                     //    value: "Select:Select;Mid America:Mid America;Northeast:Northeast;Other Region:Other Region;Southeast:Southeast;West:West",
                     //    style: "width: 100px;",
@@ -102,7 +102,7 @@
                                         return;
                                     }
                                 });
-                            }, 50);
+                            }, 1000);
                             return;
                         },
                         stype: 'select',
@@ -110,7 +110,7 @@
                     search: true, stype: 'text', searchoptions: { sopt: ['cn'] }
                 },
                 {
-                    name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, edittype: "select",
+                    name: 'Subsegment', index: 'Subsegment', width: 100, editable: true, editrules: { required: true }, edittype: "select",
                     //editoptions: {
                     //    value: "Select:Select;AAM:AAM;Intl Expat:Intl Expat",
                     //    style: "width: 100px;"
@@ -141,7 +141,7 @@
                                         return;
                                     }
                                 });
-                            }, 50);
+                            }, 1000);
                         },
                         stype: 'select',
                     },
@@ -163,9 +163,9 @@
             //onSelectRow: editRow,
             sortorder: "desc",
             multiselect: true,
-            cellEdit: true,
-            cellsubmit: 'remote',
-            cellurl: '/Home/EditCellTeamMaintenance',
+            //cellEdit: true,
+            //cellsubmit: 'remote',
+            //cellurl: '/Home/EditCellTeamMaintenance',
             onPaging: function (pgButton) {
                 if (selectedRowId != null && selectedCellId != null) {
                     $('#TeamMaintenancegrid').saveCell(selectedRowId, selectedCellId);
@@ -247,7 +247,7 @@
         //);
         $("#TeamMaintenancegrid").jqGrid('inlineNav', '#pager2',
             {
-                edit: false,
+                edit: true,
                 edittext: "Edit",
                 add: true,
                 addtext: "Add",
@@ -265,20 +265,6 @@
                         $(this).trigger("reloadGrid", [{ current: true, fromServer: true }]);
                     }
                 }
-                //onSelectRow: editRow,
-                //beforeSaveRow: function (o, rowid) {
-                //    // this is where you should save the data
-                //    // Do validation and save the data here
-                //    // Note, the 'beforeSaveRow' is undocumented, but it gets invoked before jqGrid calls its own SaveRow method.
-                //    // Get data by rowid and save it to DB and then
-
-                //    grid.saveRow(rowid, false);
-                //    return false;// To avoid jqgrid from invoking its own save again
-                //},
-                //aftersavefunc: function (rowid) {
-                //    // this fired is after saving
-                //    var rowData = $this.jqGrid("getRowData", rowid);
-                //}
             }
         );
 
@@ -297,6 +283,8 @@
         $("#del_TeamMaintenancegrid, #refresh_TeamMaintenancegrid, #TeamMaintenancegrid_ilcancel").click(function () {
             $("#infocnt_custom").text('');
         });
+
+        $(".ui-search-toolbar input[type='text']").closest("div").append("<span class='glyphicon glyphicon-search' style='left:3px;'></span>");
 
         function editRow(id) {
             if (id && id !== lastSelection) {
