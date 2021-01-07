@@ -32,8 +32,8 @@
             colNames: ['', 'Subsegment Code*', 'Subsegment Description*', 'Updated by', 'Updated Date'],
             colModel: [
                 { name: 'SUB_SEGMENT_ID', key: true, index: 'SUB_SEGMENT_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'SUB_SEGMENT_CD', index: 'SUB_SEGMENT_CD', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
-                { name: 'SUB_SEGMENT_DESCR', index: 'SUB_SEGMENT_DESCR', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
+                { name: 'SUB_SEGMENT_CD', index: 'SUB_SEGMENT_CD', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 5 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
+                { name: 'SUB_SEGMENT_DESCR', index: 'SUB_SEGMENT_DESCR', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 30 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
                 { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false, search: true, stype: 'text', searchoptions: { sopt: ['cn'] }  },
                 { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date",search: false },
             ],
@@ -134,7 +134,7 @@
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {
-                $("#infocnt_custom").text(content.replace('*', ''))
+                $("#infocnt_custom").text('Please enter the values for all mandatory fields (*)')
             }
         });
 

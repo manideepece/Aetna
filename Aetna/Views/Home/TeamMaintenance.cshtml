@@ -32,9 +32,9 @@
             colNames: ['', 'Team Code*', 'Team Name*', 'Control Count*', 'Reports', 'Region', 'Subsegment'],
             colModel: [
                 { name: 'TeamMaintenanceID', key: true, index: 'TeamMaintenanceID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'TeamCode', index: 'TeamCode', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 5 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'TeamName', index: 'TeamName', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 100 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'CtrlCnt', index: 'CtrlCnt', width: 20, editable: true, editrules: { required: true }, editoptions: { type: 'number' }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 {
                     name: 'Reports', index: 'Reports', width: 50, editable: true, editrules: { required: true }, edittype: "select",
                     editoptions: {
@@ -276,7 +276,7 @@
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {
-                $("#infocnt_custom").text(content.replace('*', ''))
+                $("#infocnt_custom").text('Please enter the values for all mandatory fields (*)')
             }
         });
 

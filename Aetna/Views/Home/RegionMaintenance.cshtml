@@ -32,8 +32,8 @@
             colNames: ['', 'Region Code*', 'Region Description*', 'Updated by', 'Updated Date'],
             colModel: [
                 { name: 'REGION_ID', key: true, index: 'REGION_ID', editable: false, hidden: true, editrules: { edithidden: false }, addrules: { addhidden: false, required: false } },
-                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'REGION_CD', index: 'REGION_CD', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 5}, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'REGION_DESCR', index: 'REGION_DESCR', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 30 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'UPDT_BY_ID', index: 'UPDT_BY_ID', width: 20, editable: false, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
                 { name: 'UPDT_TMSTMP', index: 'UPDT_TMSTMP', width: 20, type: 'date', editable: false, formatter: "date", search: false },
             ],
@@ -150,7 +150,8 @@
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {
-                $("#infocnt_custom").text(content.replace('*',''))
+                //$("#infocnt_custom").text(content.replace('*',''))
+                $("#infocnt_custom").text('Please enter the values for all mandatory fields (*)')
             }
         });
 

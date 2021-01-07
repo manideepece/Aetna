@@ -31,10 +31,10 @@
             height: '300px',
             colNames: ['UserID*', 'Last Name*', 'First Name*', 'Employee Status*', 'Team Name'],
             colModel: [
-                { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, search: true, addrules: { addhidden: false, required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
-                { name: 'EMP_STS_CD', index: 'EMP_STS_CD', width: 20, editable: true, search: false },
+                { name: 'USER_ID', key: true, index: 'USER_ID', width: 20, editable: true, editoptions: { maxlength: 18 },  search: true, addrules: { addhidden: false, required: true }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'LAST_NAM', index: 'LAST_NAM', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 15 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'FIRST_NAM', index: 'FIRST_NAM', width: 20, editable: true, editrules: { required: true }, editoptions: { maxlength: 25 }, search: true, stype: 'text', searchoptions: { sopt: ['cn'] } },
+                { name: 'EMP_STS_CD', index: 'EMP_STS_CD', width: 20, editable: true, editoptions: { maxlength: 1 }, search: false },
                 {
                     name: 'TEAMS', index: 'TEAMS', width: 50, editable: true, edittype: "select",
                     editoptions: {
@@ -167,7 +167,7 @@
 
         $.extend($.jgrid, {
             info_dialog: function (caption, content, c_b, modalopt) {
-                $("#infocnt_custom").text(content.replace('*', ''))
+                $("#infocnt_custom").text('Please enter the values for all mandatory fields (*)')
             }
         });
 
