@@ -1,0 +1,204 @@
+﻿
+@{
+    ViewBag.Title = "Region";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@using Newtonsoft.Json;
+<head>
+    <script src="~/Scripts/kendo/kendo.all.min.js"></script>
+</head>
+<style>
+    /*.k-widget .k-autocomplete .k-header .k-state-default {
+        display: none;
+    }*/
+    /*.k-button-icon {
+        display: none;
+    }
+    .k-dropdown-wrap {
+        display: none;
+    }*/
+    .table th, table td {
+        text-align: left;
+    }
+</style>
+@*<script src="https://demos.telerik.com/kendo-ui/content/shared/js/products.js"></script>*@
+
+<div id="example">
+    <div id="grid"></div>
+
+    <script>
+
+        $(document).ready(function () {
+            var dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                //data: regions,
+                transport: {
+                    read: {
+                        url: "/SecurityUI/GetRegionList",  //Controller/ActionResult
+                        dataType: "json"
+                    },
+                    update: {
+                        url: "/SecurityUI/UpdateRegion",
+                        dataType: "jsonp"
+                    },
+                    destroy: {
+                        //if (e.action === "remove") {
+                        //    this.sync();
+                        //}
+                        url: "/SecurityUI/DeleteRegion",
+                        type: "POST",
+                        dataType: "jsonp"
+                    },
+                    create: {
+                        url: "/SecurityUI/CreateRegion",
+                        dataType: "jsonp"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                autoSync: true,
+                schema: {
+                    model: {
+                        id: "REGION_ID",
+                        fields: {
+                            REGION_ID: { editable: false, nullable: true },
+                            REGION_CD: { validation: { required: true } },
+                            REGION_DESCR: { validation: { required: true } },
+                            CREAT_BY_ID: { validation: { required: false } },
+                            CREAT_TMSTMP: {
+                                editable: false, type: "date", validation: { required: false } }
+                        }
+                    }
+                }
+                });
+            debugger
+            console.log(dataSource);
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                filterable: {
+                    cell: {
+                        enabled: true,
+                        delay: 1500
+                    }
+                },
+                pageable: true,
+                filterable: {
+                    mode: "row"
+                },
+                filterMenuInit: false,
+                height: 550,
+                toolbar: ["create", "save", "cancel"],
+                columns: [
+                    { field: "REGION_ID", title: "Region Id", hidden: true },
+                    { field: "REGION_CD", title: "Region Code" },
+                    { field: "REGION_DESCR", title: "Region Description" },
+                    { field: "CREAT_BY_ID", title: "Updated By" },
+                    { field: "CREAT_TMSTMP", title: "Updated On", filterable: false, format: "{0: yyyy-MM-dd}" },
+                    //{ field: "Category", title: "Category", width: "100%", editor: categoryDropDownEditor, template: "#=Category.CategoryName#" },
+                    //{ field: "UnitPrice", title:"Unit Price", format: "{0:c}", width: "100%" },
+                    //{ command: { text: "Remove", click: deleteItem }, title: " ", width: "180px" },
+                    { command: "destroy", title: "", width: "100%" }
+                ],
+                editable: true
+            });
+            //var bftest_dataSource=null;
+            //$.ajax({
+            //    type: "GET",
+            //    url: "/SecurityUI/GetRegionList",
+            //    data: {},
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    success: function (result) {
+            //        debugger
+            //        //var data = $.parseJSON(result);
+
+            //        bindGrid(result);
+            //    }
+            //});
+
+        });
+        function deleteItem(e) {
+            debugger
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            if (confirm('Are you sure you want to Remove : ' + dataItem.REGION_DESCR)) {
+                //var grid = $("#grid").data("kendoGrid");
+                //grid.dataSource.remove(dataItem);
+                //grid.dataSource.sync();
+                //grid.refresh();
+            }
+        }
+        function bindGrid(gridData) {
+            //var model = generateModel(gridData);
+            var grid = $("#grid").kendoGrid({
+                dataSource: dataSource,
+                //dataSource: {
+                //    data: gridData,
+                //},
+                //schema: {
+                //    model: model,
+                //}
+                //schema: {
+                //    type: 'json',
+                //    parse: function (gridData) {
+                //        $.each(gridData, function (i, val) {
+                //            val.CREAT_TMSTMP = new Date(val.CREAT_TMSTMP);
+                //        });
+                //        return gridData;
+                //    },
+                //    data: function (gridData) {
+                //        return gridData;
+                //    },
+                //    total: function (gridData) {
+                //        return parseInt(gridData, 10);
+                //    }
+                //}
+                // },
+                filterable: {
+                    cell: {
+                        enabled: true,
+                        delay: 1500
+                    }
+                },
+                pageable: true,
+                filterable: {
+                    mode: "row"
+                },
+                filterMenuInit: false,
+                height: 550,
+                toolbar: ["create", "save", "cancel"],
+                columns: [
+                    { field: "REGION_ID", title: "Region Id", hidden: true },
+                    { field: "REGION_CD", title: "Region Code" },
+                    { field: "REGION_DESCR", title: "Region Description" },
+                    { field: "CREAT_BY_ID", title: "Updated By" },
+                    { field: "CREAT_TMSTMP", title: "Updated On", filterable: false },
+                    //{ field: "Category", title: "Category", width: "100%", editor: categoryDropDownEditor, template: "#=Category.CategoryName#" },
+                    //{ field: "UnitPrice", title:"Unit Price", format: "{0:c}", width: "100%" },
+                    { command: "destroy", title: " ", width: "100%" }],
+                editable: true
+            });
+        }
+
+        function categoryDropDownEditor(container, options) {
+            $('<input required name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: false,
+                    dataTextField: "CategoryName",
+                    dataValueField: "CategoryID",
+                    dataSource: {
+                        type: "odata",
+                        transport: {
+                            read: "https://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
+                        }
+                    }
+                });
+        }
+
+    </script>
+</div>
+
