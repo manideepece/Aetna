@@ -300,6 +300,36 @@ namespace AetnaAPI.Repositories
             return output;
         }
 
+        public bool EditSubsegmentMaintenanceNew(SubsegmentModel subsegment)
+        {
+            var output = false;
+            var conn = @"Server=USHYDYMANIDEE12;Database=Aetna;Integrated Security=SSPI;";
+            using (var con = new SqlConnection(conn))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_SEC_Edit_Subsegment_Maintenance_New"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = con;
+                    con.Open();
+
+                    var subsegmentIdparam = new SqlParameter("@subsegmentId", subsegment.SUB_SEGMENT_ID);
+                    var subsegmentCodeparam = new SqlParameter("@subSegmentCode", subsegment.SUB_SEGMENT_CD);
+                    var subsegmentDescriptionparam = new SqlParameter("@subSegmentDescription", subsegment.SUB_SEGMENT_DESCR);
+                    var modifiedByparam = new SqlParameter("@modifiedUser", subsegment.ModifiedUser);
+                    cmd.Parameters.Add(subsegmentIdparam);
+                    cmd.Parameters.Add(subsegmentCodeparam);
+                    cmd.Parameters.Add(subsegmentDescriptionparam);
+                    cmd.Parameters.Add(modifiedByparam);
+
+                    int result = cmd.ExecuteNonQuery();
+                    output = true;
+
+                    con.Close();
+                }
+            }
+            return output;
+        }
+
         public bool DeleteSubsegmentMaintenance(string SUB_SEGMENT_ID)
         {
             var output = false;

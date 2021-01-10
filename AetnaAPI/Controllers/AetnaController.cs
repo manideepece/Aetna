@@ -78,7 +78,7 @@ namespace AetnaAPI.Controllers
         public bool EditSubsegmentMaintenance(SubsegmentModel subsegment)
         {
             var repository = new DataAccess();
-            var output = repository.EditSubsegmentMaintenance(subsegment);
+            var output = repository.EditSubsegmentMaintenanceNew(subsegment);
             return output;
         }
 

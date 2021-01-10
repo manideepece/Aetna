@@ -38,26 +38,43 @@
                     bindGrid(result);
                 }
             });
-
-
-
         });
+        function reloadGridData() {
+            $.ajax({
+                type: "GET",
+                url: "/Home/GetSubsegmentList",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var grid = $("#grid").data("kendoGrid");
+                    //var schema = grid.dataSource.options.schema
+                    //grid.dataSource.data(result);
+                    ////grid.dataSource.options.data = result;
+                    //grid.dataSource.options.schema = schema;
+                    //grid.refresh();
+                    grid.destroy();
+                    bindGrid(result);
+                }
+            });
+        }
         function deleteItem(e) {
             var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            if (confirm('Are you sure you want to Remove : ' + dataItem.REGION_DESCR)) {
+            if (confirm('Are you sure you want to Remove : ' + dataItem.SUB_SEGMENT_DESCR)) {
                 $.ajax({
                     type: "GET",
-                    url: "/Home/DeleteSubsgment",
-                    data: { regionId: dataItem.REGION_ID },
+                    url: "/Home/DeleteSubsegment",
+                    data: { subsegmentId: dataItem.SUB_SEGMENT_ID },
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (result) {
-                        var grid = $("#grid").data("kendoGrid");
-                        grid.dataSource.remove(dataItem);
-                        grid.dataSource.sync();
-                        grid.sync();
-                        grid.refresh();
                         alert(result);
+                        var grid = $("#grid").data("kendoGrid");
+                        //grid.dataSource.remove(dataItem);
+                        //grid.dataSource.sync();
+                        ////grid.sync();
+                        //grid.refresh();
+                        reloadGridData()
                         $("a.k-button.k-button-icontext.k-grid-Save").text("Save");
                     }
                 });
@@ -83,18 +100,13 @@
                         }
                     }
                 },
-                //filterable: {
-                //    cell: {
-                //        enabled: true,
-                //        delay: 1500
-                //    }
-                //},
-                pageable: true,
+                pageable: {
+                    pageSize: 20
+                },
                 filterable: {
                     mode: "row"
                 },
                 change: onSelectCell,
-                //persistSelection: true,
                 navigatable: true,
                 selectable: true,
                 sortable: true,
@@ -104,10 +116,8 @@
                 toolbar: [{
                     name: 'new',
                     text: "Add Subsegment",
-                    //className: "k-grid-addRegion"
                 }, {
                     text: "Save",
-                    //className: "k-grid-saveRegion"
                 }],
                 columns: [
                     {
@@ -143,7 +153,6 @@
                     { command: { text: "Remove", click: deleteItem }, title: " ", width: "180px" }
                 ],
                 editable: "inline"
-                // dataBound: onDataBound
             });
 
             $(".k-grid-new").click(function (e) {
@@ -174,6 +183,10 @@
                         dataType: "json",
                         success: function (result) {
                             alert(result);
+                            //grid.dataSource.read();
+                            //grid.sync();
+                            //grid.refresh(); 
+                            reloadGridData();
                         }
                     });
                 }
@@ -187,10 +200,7 @@
 
                 $(selectedtr).eq(0).siblings().removeClass("selectedRow");
                 $(selectedtr).eq(0).siblings().removeClass("selected");
-                //$(selectedtr).eq(0).siblings().removeClass("k-grid-edit-row");
-                //$("a.k-button.k-button-icontext.k-grid-Save").text("Save")
-                $(selectedtr).eq(0).removeClass("k-state-selected");
-                //$(selectedtr).children().removeClass("k-state-selected");  
+                $(selectedtr).eq(0).removeClass("k-state-selected");  
                 $(selectedtr).eq(0).addClass("selectedRow");
                 $(selectedtr).eq(0).addClass("selected");
                 rowData = grid.dataItem(selectedtr);

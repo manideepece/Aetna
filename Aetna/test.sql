@@ -645,3 +645,13 @@ begin
 		 drop table #regions
 		 drop table #subSegments
 end
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+Create proc [dbo].[sp_SEC_Edit_Subsegment_Maintenance_New]
+@subsegmentId int,
+@subSegmentCode varchar(5),
+@subSegmentDescription varchar(30),
+@modifiedUser varchar(100)
+as
+begin
+	Update BTT_SEC_SUB_SEGMENT_LKP_N set SUB_SEGMENT_CD = @subSegmentCode, SUB_SEGMENT_DESCR = @subSegmentDescription, UPDT_BY_ID = @modifiedUser, UPDT_TMSTMP = GETDATE() where SUB_SEGMENT_ID = @subsegmentId
+end

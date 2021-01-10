@@ -148,10 +148,15 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Kendo\fonts\DejaVu\LICENSE.txt" />
+    <Content Include="Content\Kendo\fonts\glyphs\KendoUIGlyphs.svg" />
+    <Content Include="Content\Kendo\fonts\glyphs\WebComponentsIcons.svg" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\jquery.multiselect.css" />
     <Content Include="Content\Kendo\kendo.common.min.css" />
+    <Content Include="Content\Kendo\kendo.default.min.css" />
+    <Content Include="Content\Kendo\kendo.rtl.min.css" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -222,6 +227,28 @@
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\Kendo\kendo.common.min.css.map" />
+    <Content Include="Content\Kendo\kendo.rtl.min.css.map" />
+    <Content Include="Content\Kendo\kendo.default.min.css.map" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSans-Bold.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSans-Oblique.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSans.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSansMono-Bold.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSansMono-BoldOblique.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSansMono-Oblique.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSansMono.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSerif-Bold.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSerif-BoldItalic.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSerif-Italic.ttf" />
+    <Content Include="Content\Kendo\fonts\DejaVu\DejaVuSerif.ttf" />
+    <Content Include="Content\Kendo\fonts\glyphs\KendoUIGlyphs.eot" />
+    <Content Include="Content\Kendo\fonts\glyphs\KendoUIGlyphs.ttf" />
+    <Content Include="Content\Kendo\fonts\glyphs\KendoUIGlyphs.woff" />
+    <Content Include="Content\Kendo\fonts\glyphs\WebComponentsIcons.eot" />
+    <Content Include="Content\Kendo\fonts\glyphs\WebComponentsIcons.ttf" />
+    <Content Include="Content\Kendo\fonts\glyphs\WebComponentsIcons.woff" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\i18n\grid.locale-bg.js" />
@@ -282,7 +309,10 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Kendo\jquery.min.js" />
+    <Content Include="Scripts\Kendo\jszip.min.js" />
     <Content Include="Scripts\Kendo\kendo.all.min.js" />
+    <Content Include="Scripts\Kendo\kendo.aspnetmvc.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="test.sql" />
     <Content Include="Web.config" />
@@ -306,6 +336,7 @@
     <Content Include="Views\Home\UserTeamMapping.cshtml" />
     <Content Include="Views\Home\Region.cshtml" />
     <Content Include="Views\Home\Subsegment.cshtml" />
+    <Content Include="Scripts\Kendo\kendo.all.min.js.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
