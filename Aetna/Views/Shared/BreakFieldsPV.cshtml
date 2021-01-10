@@ -1,0 +1,736 @@
+﻿@model Aetna.SRQ.NURA.Web.Models.ReportSearchModel
+
+@using Newtonsoft.Json;
+
+<div class="card-body">
+    <table id="tblBreakFields" cellpadding="0" cellspacing="0" border="1">
+
+        <tr>
+
+            <th>BreakFields</th>
+            <th>Selection</th>
+            <th>Order</th>
+            <th style="width: 430px !important;vertical-align: top;display: inline-block;">Value</th>
+        </tr>
+        @if (Model.BreakFieldsList != null)
+        {
+            int i = 1;
+            foreach (var item in Model.BreakFieldsList)
+            {
+                if (item.Name != null && item.Name != "")
+                {
+                    var id = item.Code + "BFSelection";
+                    var name = "BFSelection" + i;
+                    <tr style="background-color:@item.Color">
+
+                        <td>@item.Name</td>
+                        <td align="center"><input type="checkbox" id="@id" name=@name onchange="enablebreakfields(this,'@item.Code','@item.Name');" /></td>
+                        <td>@i</td>
+                        <td>
+                            <input value="All" id=@item.Code style="width:100%" disabled />
+                        </td>
+                    </tr>
+                    i = i + 1;
+                }
+            }
+        }
+
+    </table>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-4 text-right">
+                <i class="fas fa-square" style="font-size:24px;color:aqua"></i>
+            </div>
+            <div class="col-md-8">
+                <span> STRUCTURE / PLAN / FUNDING</span>
+            </div>
+        </div>   <div class="row">
+            <div class="col-md-4 text-right">
+                <i class="fas fa-square" style="font-size:24px;color:bisque"></i>
+            </div>
+            @if (Model.ReportID != 5)
+            {
+                <div class="col-md-8">
+                    <span> STATE / NSA / PRODUCT / BUS LINE</span>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-8">
+                    <span>PRODUCT / BUS LINE</span>
+                </div>
+            }
+        </div>
+        @if (Model.ReportID != 5 & Model.ReportID != 3)
+        {
+            <div class="row">
+                <div class="col-md-4 text-right">
+                    <i class="fas fa-square" style="font-size:24px;color:burlywood"></i>
+                </div>
+                <div class="col-md-8">
+                    <span>JOINT VENTURE</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 text-right">
+                    <i class="fas fa-square" style="font-size:24px;color:aquamarine"></i>
+                </div>
+                <div class="col-md-8">
+                    <span>VBC</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 mt-3 mb-2 text-right">
+
+        @if (Model.SearchID != 0)
+        {
+            <button aria-label="Save" class="btn button-small-colored btn-sm criteriaSubmit" type="button" name="save" value="Save" id="btnSave">Update</button>
+        }
+        else
+        {
+            <button aria - label="Save" class="btn button-small-colored btn-sm criteriaSubmit" type="button" name="save" value="Save" id="btnSave">Save </button>
+        }
+
+        <button aria-label="View" class="btn button-small-colored btn-sm criteriaSubmit" type="button" name="view" value="View" id="btnView"> View </button>
+    </div>
+</div>
+
+
+<link href="~/Content/kendo/kendo.rtl.min.css" rel="stylesheet">
+<script src="https://kendo.cdn.telerik.com/2020.3.1021/js/kendo.all.min.js"></script>
+
+
+<script type="text/javascript">
+    function formatDates(strDate) {
+                var stDate = new Date(strDate);
+
+                var day = ("0" + stDate.getDate()).slice(-2);
+                var month = ("0" + (stDate.getMonth() + 1)).slice(-2);
+
+                return new Date((month) + "/" + (new Date(stDate.getFullYear(), month, 0).getDate()) + "/" + (stDate.getFullYear())).toISOString().split('T')[0];
+            }
+    $(function () {
+
+        var ctrldropdowntree = "";
+        var selectedcontrols ="";
+
+        var tblData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ReportSearchData));
+        if (tblData != null) {
+            $("#lblTitle").text(tblData.ReportName);
+              fnLoadControls("-"+tblData.Controls, '@Model.ReportID');
+            if (tblData.SearchID != 0) {
+                $('input[type=radio][name=rdquery][value=Saved]').prop("checked", true);
+                $("#ddlSearchName").prop('disabled', false);
+                $("#txtName").prop('disabled', false);
+        }
+            else {
+                $('input[type=radio][name=rdquery][value=New]').prop("checked", true);
+                $("#ddlSearchName").prop('disabled', true);
+                $("#txtName").prop('disabled', false);
+            }
+            $("#end").val(tblData.EndDate);
+            if ($("#start").val() != undefined) {
+                $("#start").val(tblData.StartDate);
+                var stdatepicker = $("#start").data("kendoDatePicker");
+                var _lastdate = $("#end").val() == "" ? new Date(endDate) : new Date($("#end").val());
+                if ('@Model.ReportID' == 3) {
+                    stdatepicker.setOptions({
+                        min: new Date(_lastdate.setMonth(_lastdate.getMonth() - 17))
+                    });
+                }
+                else {
+                    stdatepicker.setOptions({
+                        min: new Date(_lastdate.setMonth(_lastdate.getMonth() - 26))
+                    });
+                }
+            }
+            var enddatepicker = $("#end").data("kendoDatePicker");
+            var runDate = new Date($("#end").val());
+            if ('@Model.ReportID' == 4 || '@Model.ReportID' == 15) {
+                enddatepicker.setOptions({
+                    min: new Date(runDate.setMonth(runDate.getMonth() - 13))
+                });
+            }
+
+            enddatepicker.setOptions({
+                max: new Date($("#end").val())
+            });
+
+            if ('@Model.ReportID' == 3) {
+                enddatepicker.setOptions({
+                    min: new Date(_lastdate.setMonth(_lastdate.getMonth()))
+                });
+                stdatepicker.setOptions({
+                    max: new Date($("#end").val())
+                });
+                }
+
+            
+            if (tblData.IncurredClaim == "" & '@Model.ReportID' == 3) {
+                $('input[type=radio][name=claim][value=Uncompleted]').prop("checked", true);
+            }
+            else {
+                if (tblData.IncurredClaim == "Uncompleted") {
+                    $('input[type=radio][name=claim][value=Uncompleted]').prop("checked", true);
+                }
+                else {
+                    $('input[type=radio][name=claim][value=Completed]').prop("checked", true);
+                }
+            }
+            if (tblData.Controls != "") {
+                //fnLoadControls(tblData.Controls, '@Model.ReportID');
+                var ctldropdowntree = $("#controlsDropDownTree").data("kendoDropDownTree");
+        ctldropdowntree.value(tblData.Controls.split(','));
+                //ctldropdowntree.trigger("change");
+            }
+            $("#ddlSearchName").val(tblData.SearchID);
+            $("#txtName").val(tblData.SearchName)
+            $("#txtRegion").val(tblData.Segments);
+            $("#hdnSearchId").val(tblData.SearchID);
+
+            $("#ddlVBC").val(tblData.VBC != "" ? tblData.VBC : "both");
+            debugger;
+            $('input[name="HAMMember"]:checked').val(tblData.HAMMember);
+            if (tblData.HAMMember == "1") {
+                $('#rdoMemberYes').prop('checked', true);
+                $('#rdoMemberNo').prop('checked', false);
+            }
+            if (tblData.HAMSubscriber == "1") {
+                $('#rdoSubscriberYes').prop('checked', true);
+                $('#rdoSubscriberNo').prop('checked', false);
+            }
+            $("#txtGreater").val(tblData.HAMGreatherValue);
+            if (tblData.HAMLesserValue != "0") {
+                $("#txtLesser").val(tblData.HAMLesserValue == "999999999" ? "" : tblData.HAMLesserValue);
+            }
+            //fnVBCSelectionFilter(tblData.VBC);
+            $(tblData.BreakFieldsList).each(function (index, data) {
+               debugger;
+                if (data.Name != "") {
+                    $("input[name='BFSelection" + (index + 1) + "'").prop("checked", data.Selection);
+                    enablebreakfields($("input[name='BFSelection" + (index + 1) + "'").prop("checked", data.Selection), data.Code, data.Name);
+                    var bfdropdowntree = $("#" + data.Code).data("kendoDropDownTree");
+                   debugger;
+                bfdropdowntree.enable(true);
+                bfdropdowntree.value((data.Value).split(','));
+                //bfdropdowntree.trigger("change");
+            }
+        })
+
+        }
+        if ($("#hdnSearchId").val() != 0 && $("#hdnSearchId").val() != undefined) {
+            //alert($("#hdnSearchId").val());
+            $("#btnView").prop("disabled", false);
+        }
+        else {
+            $("#btnView").prop("disabled", true);
+        }
+        if ('@Model.ReportID' != 3 && '@Model.ReportID' != 5) {
+            fnVBCSelectionFilter(tblData.VBC);
+        }
+
+        $("#btnSave").click(function () {
+           //debugger;
+            var validator = true;
+             ctrldropdowntree = $("#controlsDropDownTree").data("kendoDropDownTree");
+             selectedcontrols = ctrldropdowntree["_values"].join(',');
+            if (selectedcontrols == "") {
+                $("#controlMsg").text("Select one or more Control(s)/Group(s) for your report.");
+                validator = false;
+            }
+            if ($("#txtName").val() == "" && $("#ddlSearchName").val() == "") {
+                $("#queryMsg").text("Please enter the Query Name.");
+                validator = false;
+            }
+
+            if (validator == true) {
+                var reportId = $("#hdnReportId").val();
+                if (reportId == 3) {
+
+                    $("#HAMdialog").dialog({
+                        title: "High Amount Claims Specific Parameters",
+                        autoOpen: false,
+                        maxWidth: 500,
+                        maxHeight: 250,
+                        width: 700,
+                        height: "auto",
+                        modal: true,
+                        //close:false
+                    }).prev(".ui-dialog-titlebar").css("background", "#7D3F98").css("color", "white").css("font-family", "Open Sans").css("top","0px").prop('title', "HAM Threshold");
+                    $(".ui-resizable-se").hide();
+                    $("#HAMdialog").dialog('open');
+                    $("#HAMPopUp").show();
+                    $("#btnProceed").hide();
+                    $("#btnSaveHAM").show();
+                    //$.ajax({
+                    //    type: "GET",
+                    //    url: "/selection/dialogHAMReport",
+                    //    data: "",
+                    //    async: false,
+                    //    success: function (data) {
+                    //        //;
+                    //        $("#HAMdialog").html(data);
+                    //        $("#HAMdialog").dialog('open');
+                    //        $("#btnProceed").hide();
+                    //    }
+                    //});
+                }
+                else {
+                    $("#HAMdialog").dialog('close');
+                    SaveReport();
+                }
+
+            }
+        });
+        $("#btnView").click(function () {
+            var reportId = $("#hdnReportId").val();
+           //debugger;
+            //var searchId = $("#hdnSearchId").val()
+            if (reportId == 15) {
+                $("#SBRMBR").dialog({
+                    title: "Select Subscribers / Members",
+                    autoOpen: false,
+                    maxWidth: 500,
+                    maxHeight: 250,
+                    width: 500,
+                    height: 270,
+                    modal: true,
+                    //close:false
+                }).prev(".ui-dialog-titlebar").css("background", "#7D3F98").css("color", "white").css("font-family", "Open Sans").prop('title', "Select Subscribers / Members");
+                $(".ui-resizable-se").hide();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/selection/SbrMbrReport",
+                    data: "",
+                    async: false,
+                    success: function (data) {
+                        $("#SBRMBR").html(data);
+                        $("#SBRMBR").dialog('open');
+                    }
+                });
+            }
+            else if (reportId == 3) {
+                $("#HAMdialog").dialog({
+                    title: "High Amount Claims Specific Parameters",
+                    autoOpen: false,
+                    maxWidth: 500,
+                    maxHeight: 250,
+                    width: 700,
+                    height: "auto",
+                    modal: true,
+                    //close:false
+                }).prev(".ui-dialog-titlebar").css("background", "#7D3F98").css("color", "white").css("font-family", "Open Sans").prop('title', "HAM Threshold");
+                $(".ui-resizable-se").hide();
+
+                $("#HAMdialog").dialog('open');
+                $("#HAMPopUp").show();
+                $("#btnProceed").show();
+                $("#btnSaveHAM").hide();
+
+            }
+            else {
+                window.open("../CrystalReport/DetailByControlDetailByBreakField.aspx", "_blank")
+                window.open("../CrystalReport/DetailByControlSummaryByBreakField.aspx", "_blank")
+                window.open("../CrystalReport/SummaryByControlDetailByBreakField.aspx", "_blank")
+                window.open("../CrystalReport/SummaryByControlSummaryByBreakField.aspx", "_blank")
+            }
+        })
+
+        $("#btnSaveHAM").click(function (e) {
+            var greaterVal = $("#txtGreater").val();
+            var LesserVal = $("#txtLesser").val() == "" ? 999999999 : $("#txtLesser").val();
+            if (parseInt(LesserVal) >= parseInt(greaterVal)) {
+                SaveReport();
+                $("#HAMdialog").dialog('close');
+            } else {
+                alert("Max Treshold shall be GREATER than min Treshold");
+            }
+
+        });
+
+        function SaveReport() {
+            var queryName = $("#txtName").val();
+            //var queryId = $("#queryId").val();
+            var startDate = null;
+            if ($("#start").val() != undefined) {
+                startDate = formatDates($("#start").val());
+            }
+            //HAM Report
+            var Member = $('input[name="HAMMember"]:checked').val();
+            var Subscriber = $('input[name="HAMMSubscriber"]:checked').val();
+            var greaterVal = $("#txtGreater").val();
+            //var LesserVal = $("#txtLesser").val();
+            var LesserVal = $("#txtLesser").val() == "" ? 999999999 : $("#txtLesser").val();
+
+            //if (LesserVal == "") {
+            //    LesserVal = "0";
+            //}
+            var endDate = formatDates($("#end").val());
+            var claim = $('input[name="claim"]:checked').val();
+            var selectedregion = $("#txtRegion").val();
+            var vbc = $("#ddlVBC").val();
+            var reportId = $("#hdnReportId").val();
+            var searchId = $("#ddlSearchName").val() != "" ? $("#ddlSearchName").val() : null;
+            var BreakFieldsData = $('#tblBreakFields tr:has(td)').map(function (i, v) {
+                var $td = $('td', this);
+                return {
+                    Name: $td.eq(0).text(),
+                    Selection: $td.eq(1).children(0).prop("checked"),
+                    Value: $td.eq(1).children(0).prop("checked") == false || $("#" + $td.eq(3).children(0).children()[1].id).data("kendoDropDownTree")["_values"].join(',') == "" ? "All" : $("#" + $td.eq(3).children(0).children()[1].id).data("kendoDropDownTree")["_tags"].map(a => a.value.trim()).join(',')
+                }
+            }).get();
+            console.log(BreakFieldsData);
+
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '/Selection/SaveReportSearch',
+                data: JSON.stringify({
+                    breakFieldsData: BreakFieldsData, ReportId: reportId, QueryId: searchId, QueryName: queryName, StartDate: startDate, EndDate: endDate, Claim: claim, SelectedRegion: selectedregion, SelectedControls: selectedcontrols, VBC: vbc,
+                    greaterValue: greaterVal, LesserValue: LesserVal, MemberID: Member, SubscriberID: Subscriber
+                }),
+                success: function (data) {
+                    $("#btnView").prop("disabled", false);
+                    $("#hdnSearchId").val(data);
+                    if (searchId != null && searchId != 0) {
+                        alert("Report criteria updated successfully!");
+                    }
+                    else
+                        alert("Report criteria saved successfully!");
+                }
+            });
+        }
+
+        $("#tblBreakFields").sortable({
+            items: 'tr:not(tr:first-child)',
+            cursor: 'pointer',
+            axis: 'y',
+            dropOnEmpty: false,
+            start: function (e, ui) {
+                ui.item.addClass("selected");
+            },
+            stop: function (e, ui) {
+                ui.item.removeClass("selected");
+                $(this).find("tr").each(function (index) {
+                    if (index > 0) {
+                        $(this).find("td").eq(2).html(index);
+                    }
+                });
+            }
+        });
+
+
+
+    });
+
+
+    $("#SUFFIX").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#ACCOUNT").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#PLANSUMMARY").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#MEDBIC").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#PRIPAY").kendoDropDownTree({
+        dataTextField: "text",
+        dataValueField: "value",
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#FUNDING").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#STATE").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        change: ddtSTATE_Change,
+        dataSource: []
+    });
+    //var statddt = $("#controlsDropDownTree").data("kendoDropDownTree");
+    //statddt.bind("change", statddt_change);
+    $("#NETWORK").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#PRODLINE").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#PRODCAT").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#BUSLINE").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#JOINTVENT").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#VBCORG").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        change: ddtVBCORG_change,
+        dataSource: []
+    });
+       //var statddt = $("#controlsDropDownTree").data("kendoDropDownTree");
+    //statddt.bind("change", statddt_change);
+    $("#VBCPOPGRP").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#VBCMOD").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    $("#FINRISK").kendoDropDownTree({
+            placeholder: "All",
+        checkboxes: true,
+        checkAllTemplate: "Check All",
+        checkAll: true,
+        autoClose: false,
+        enable: false,
+        filter: "contains",
+        dataSource: []
+    });
+    function ddtVBCORG_change() {
+        if (this.value().length != 0) {
+            $("#VBCPOPGRPBFSelection").prop("disabled", false);
+            if ($("#VBCPOPGRPBFSelection").prop('checked') == true) {
+                var ddtVBCPOPGRP = $("#VBCPOPGRP").data("kendoDropDownTree");
+                ddtVBCPOPGRP.value([]);
+                ddtVBCPOPGRP.enable(true);
+            }
+            var ctrldropdowntree = $("#controlsDropDownTree").data("kendoDropDownTree");
+            var selectedcontrols = ctrldropdowntree["_values"].join(',');
+            $.ajax({
+                type: "GET",
+                url: "/Selection/GetBreakFieldValues",
+                data: { breakFieldName: "VBC Pop Group", control: selectedcontrols, vbcoption: "vbc", state: "", vborg: this.value().join(",") },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+
+                    let dropdowntree = $("#VBCPOPGRP").data("kendoDropDownTree");
+                    let test_dataSource = new kendo.data.HierarchicalDataSource({
+                        data: result.Controls
+                    });
+                    dropdowntree.setDataSource(test_dataSource);
+                    //var selectAllvbc = result.Controls.map(a => a.value.trim()).join(',');
+                    //dropdowntree.value(selectAllvbc.split(','))
+                }
+            });
+        }
+        else {
+            $("#VBCPOPGRPBFSelection").prop("checked", false);
+            $("#VBCPOPGRPBFSelection").prop("disabled", true);
+            var ddtVBCPOPGRP = $("#VBCPOPGRP").data("kendoDropDownTree");
+            ddtVBCPOPGRP.value([]);
+            ddtVBCPOPGRP.enable(false);
+        }
+    }
+    function ddtSTATE_Change() {
+        var selectedState = "";
+        if (this.value().length != 0) {
+            selectedState = this.value().join(",");
+        }
+        bindNetwork(selectedState);
+    }
+    function bindNetwork(selectedState) {
+        debugger
+        var ddtNETWORK = $("#NETWORK").data("kendoDropDownTree");
+        //ddtNETWORK.value([]);
+        if ($("#NETWORKBFSelection").prop('checked') == true) {
+            ddtNETWORK.enable(true);
+        }
+        else {
+            ddtNETWORK.enable(false);
+        }
+        var ctrldropdowntree = $("#controlsDropDownTree").data("kendoDropDownTree");
+        var selectedcontrols = ctrldropdowntree["_values"].join(',');
+        $.ajax({
+            type: "GET",
+            url: "/Selection/GetBreakFieldValues",
+            data: { breakFieldName: "Network", control: selectedcontrols, vbcoption: "", state: selectedState, vborg: "" },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                                let test_dataSource = new kendo.data.HierarchicalDataSource({
+                    data: result.Controls
+                });
+                ddtNETWORK.setDataSource(test_dataSource);
+                //var selectAllNw = result.Controls.map(a => a.value.trim()).join(',');
+                //ddtNETWORK.value(selectAllNw.split(','))
+            }
+        });
+    }
+    function enablebreakfields($this, id, value) {
+
+        var selectedState = "";
+        var selectedVBOrg="";
+            if ($($this).prop("checked")) {
+                var ctrldropdowntree = $("#controlsDropDownTree").data("kendoDropDownTree");
+                var selectedcontrols = ctrldropdowntree["_values"].join(',');
+                if (id == "NETWORK") {
+                    var ddtState = $("#STATE").data("kendoDropDownTree");
+                    selectedState = ddtState.value().join(',');
+                }
+                 if (id == "VBCPOPGRP") {
+                    var ddtVBOrg = $("#VBCORG").data("kendoDropDownTree");
+                    selectedVBOrg = ddtVBOrg.value().join(',');
+                }
+                var vbcoption = $("#ddlVBC").val();
+                $.ajax({
+                    type: "GET",
+                    url: "/Selection/GetBreakFieldValues",
+                    data: { breakFieldName: value, control: selectedcontrols, vbcoption: vbcoption, state: selectedState, vborg: selectedVBOrg },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        debugger
+                        var bfdropdowntree = $("#" + id).data("kendoDropDownTree");
+                        if ($("#hdnSearchId").val() == "0") {
+                            bfdropdowntree.value([]);
+                        }
+                        var bftest_dataSource = new kendo.data.HierarchicalDataSource({
+                            data: result.Controls
+                        });
+
+                        bfdropdowntree.setDataSource(bftest_dataSource);
+                        bfdropdowntree.enable(true);
+                        // - For new Story
+                        //var selectAll = result.Controls.map(a => a.value.trim()).join(',');
+                        //bfdropdowntree.value(selectAll.split(','));
+
+                }
+            });
+        }
+            else {
+               //;
+                if (id != "") {
+                    var dropdownBox = $("#" + id).data("kendoDropDownTree");
+                    dropdownBox.value([]);
+                    dropdownBox.enable(false);
+                }
+
+                if (id == "VBCORG") {
+                    $("#VBCPOPGRPBFSelection").prop("checked",false);
+                    $("#VBCPOPGRPBFSelection").prop("disabled", true);
+                    var ddtVBCPOPGRP = $("#VBCPOPGRP").data("kendoDropDownTree");
+                    ddtVBCPOPGRP.value([]);
+                    ddtVBCPOPGRP.enable(false);
+                }
+                if (id == "STATE") {
+                    bindNetwork("");
+                }
+            }
+
+    }
+
+</script>
