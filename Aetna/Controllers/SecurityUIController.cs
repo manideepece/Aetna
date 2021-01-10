@@ -1,6 +1,4 @@
-﻿using Aetna.SRQ.NURA.Web.Common;
-using Aetna.SRQ.NURA.Web.Filters;
-using Aetna.SRQ.NURA.Web.Models;
+﻿using Aetna.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +11,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 
-namespace Aetna.SRQ.NURA.Web.Controllers.Reports
+namespace Aetna.Controllers
 {
     //[SiteMinderAuthentication(AuthenticateMode.Enforce)]
     public class SecurityUIController : Controller
@@ -188,19 +186,19 @@ namespace Aetna.SRQ.NURA.Web.Controllers.Reports
             return View();
         }
 
-        public ActionResult UserTeamMapping()
-        {
-            var _getNTGroupResult = (Aetna.Tkc.DirectoryServices.ActiveDirectorySupport.GetMembersOfDomainGroup(NTGroupName)).ToList();
-            if (_getNTGroupResult.Count > 0)
-            {
-                List<SelectListItem> _list = new List<SelectListItem>();
+        //public ActionResult UserTeamMapping()
+        //{
+        //    var _getNTGroupResult = (Aetna.Tkc.DirectoryServices.ActiveDirectorySupport.GetMembersOfDomainGroup(NTGroupName)).ToList();
+        //    if (_getNTGroupResult.Count > 0)
+        //    {
+        //        List<SelectListItem> _list = new List<SelectListItem>();
 
-                _list = _getNTGroupResult.Select(x => new SelectListItem() { Text = x.ToString() }).ToList();
-                Session["NTGroupUserList"] = _list;
-            }
+        //        _list = _getNTGroupResult.Select(x => new SelectListItem() { Text = x.ToString() }).ToList();
+        //        Session["NTGroupUserList"] = _list;
+        //    }
 
-            return View();
-        }
+        //    return View();
+        //}
 
         public JsonResult GetNTGroupUserList(string term)
         {
@@ -366,8 +364,8 @@ namespace Aetna.SRQ.NURA.Web.Controllers.Reports
                         teamMaintenance.TeamMaintenanceID = Convert.ToInt32(Request.Form["TeamMaintenanceID"]);
                         return await EditTeamMaintenance(teamMaintenance);
                     }
-                    UserProfile user = (UserProfile)Session["userProfile"];
-                    teamMaintenance.ModifiedUser = user == null ? "System" : user.aetnaId;
+                    //UserProfile user = (UserProfile)Session["userProfile"];
+                    //teamMaintenance.ModifiedUser = user == null ? "System" : user.aetnaId;
                     var myContent = JsonConvert.SerializeObject(teamMaintenance);
                     HttpResponseMessage response = _objHttpCl.PostAsync(_objHttpCl.BaseAddress + "/Security/AddTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
@@ -438,8 +436,8 @@ namespace Aetna.SRQ.NURA.Web.Controllers.Reports
             {
                 if (ModelState.IsValid)
                 {
-                    UserProfile user = (UserProfile)Session["userProfile"];
-                    region.ModifiedUser = user == null ? "System" : user.aetnaId;
+                    //UserProfile user = (UserProfile)Session["userProfile"];
+                    //region.ModifiedUser = user == null ? "System" : user.aetnaId;
                     var myContent = JsonConvert.SerializeObject(region);
                     HttpResponseMessage response = _objHttpCl.PostAsync(_objHttpCl.BaseAddress + "/Security/AddRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
@@ -657,8 +655,8 @@ namespace Aetna.SRQ.NURA.Web.Controllers.Reports
             {
                 if (ModelState.IsValid)
                 {
-                    UserProfile user = (UserProfile)Session["userProfile"];
-                    subsegment.ModifiedUser = user == null ? "System" : user.aetnaId;
+                    //UserProfile user = (UserProfile)Session["userProfile"];
+                    //subsegment.ModifiedUser = user == null ? "System" : user.aetnaId;
                     var myContent = JsonConvert.SerializeObject(subsegment);
                     HttpResponseMessage response = _objHttpCl.PostAsync(_objHttpCl.BaseAddress + "/Security/AddSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)
@@ -774,8 +772,8 @@ namespace Aetna.SRQ.NURA.Web.Controllers.Reports
             {
                 if (ModelState.IsValid)
                 {
-                    UserProfile user = (UserProfile)Session["userProfile"];
-                    userTeamMapping.ModifiedUser = user == null ? "System" : user.aetnaId;
+                    //UserProfile user = (UserProfile)Session["userProfile"];
+                    //userTeamMapping.ModifiedUser = user == null ? "System" : user.aetnaId;
                     var myContent = JsonConvert.SerializeObject(userTeamMapping);
                     HttpResponseMessage response = _objHttpCl.PostAsync(_objHttpCl.BaseAddress + "/Security/AddUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                     if (response.IsSuccessStatusCode)

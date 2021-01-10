@@ -127,6 +127,77 @@ namespace Aetna.Controllers
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult Region()
+        {
+            return View();
+        }
+
+        public ActionResult GetRegionList()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetRegions").Result;  // Blocking call!
+            var regions = new List<Region>();
+            if (response.IsSuccessStatusCode)
+            {
+                string res = response.Content.ReadAsStringAsync().Result;
+                regions = JsonConvert.DeserializeObject<List<Region>>(res);
+            }
+
+            return Json(regions, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateRegion(string regionId, string regionCode, string regionDescription)
+        {
+            Region requestRegion = new Region();
+            requestRegion.REGION_ID = regionId != "" ? Convert.ToInt32(regionId) : 0;
+            requestRegion.REGION_CD = regionCode;
+            requestRegion.REGION_DESCR = regionDescription;
+            requestRegion.ModifiedUser = "N376656" /*((UserProfile)Session["userProfile"]).aetnaId*/;
+            var myContent = JsonConvert.SerializeObject(requestRegion);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.PostAsync("api/aetna/EditRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var res = response.Content.ReadAsStringAsync().Result;
+            }
+            return Json(!string.IsNullOrEmpty(regionId) ? "Updated Successfully" : "Saved Successfully", JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult DeleteRegion(string regionId)
+        {
+            if (ModelState.IsValid)
+            {
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("http://localhost:5862/");
+                // Add an Accept header for JSON format.    
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var myContent = JsonConvert.SerializeObject(regionId);
+                HttpResponseMessage response = client.PostAsync("api/aetna/DeleteRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var output = response.Content.ReadAsStringAsync();
+                    return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                var errorList = (from item in ModelState
+                                 where item.Value.Errors.Any()
+                                 select item.Value.Errors[0].ErrorMessage).ToList();
+
+                return Json(errorList, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public ActionResult RegionMaintenance()
         {
             return View();
@@ -210,6 +281,47 @@ namespace Aetna.Controllers
         public ActionResult SubsegmentMaintenance()
         {
             return View();
+        }
+
+        public ActionResult Subsegment()
+        {
+            return View();
+        }
+
+        public ActionResult GetSubsegmentList()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetSubsegments").Result;  // Blocking call!
+            var regions = new List<Subsegment>();
+            if (response.IsSuccessStatusCode)
+            {
+                string res = response.Content.ReadAsStringAsync().Result;
+                regions = JsonConvert.DeserializeObject<List<Subsegment>>(res);
+            }
+
+            return Json(regions, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateSubsegment(string subsegmentId, string subsegmentCode, string subsegmentDescription)
+        {
+            Subsegment requestSubsegment = new Subsegment();
+            requestSubsegment.SUB_SEGMENT_ID = subsegmentId != "" ? Convert.ToInt32(subsegmentId) : 0;
+            requestSubsegment.SUB_SEGMENT_CD = subsegmentCode;
+            requestSubsegment.SUB_SEGMENT_DESCR = subsegmentDescription;
+            requestSubsegment.ModifiedUser = "N376656" /*((UserProfile)Session["userProfile"]).aetnaId*/;
+            var myContent = JsonConvert.SerializeObject(requestSubsegment);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.PostAsync("api/aetna/EditSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var res = response.Content.ReadAsStringAsync().Result;
+            }
+            return Json(!string.IsNullOrEmpty(subsegmentId) ? "Updated Successfully" : "Saved Successfully", JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult UserTeamMapping()

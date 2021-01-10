@@ -1,12 +1,17 @@
 
 @{
     ViewBag.Title = "Region";
-    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Layout = "~/Views/Shared/_AetnaLayout.cshtml";
 }
 @using Newtonsoft.Json;
 
 <style>
-   
+
+    .container {
+        color: black !important;
+
+    }
+
     .table th, table td {
         text-align: left;
     }
@@ -21,12 +26,11 @@
             $("#lblTitle").text('Region Maintenance');
             $.ajax({
                 type: "GET",
-                url: "/SecurityUI/GetRegionList",
+                url: "/Home/GetRegionList",
                 data: {},
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                    debugger
                                     bindGrid(result);
                 }
             });
@@ -35,7 +39,6 @@
 
         });
         function deleteItem(e) {
-            debugger
             var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
             if (confirm('Are you sure you want to Remove : ' + dataItem.REGION_DESCR)) {
                 $.ajax({
@@ -176,7 +179,6 @@
             });
 
             function onSelectCell(e) {
-                debugger
                 var grid = e.sender;
                 var cellIndex = grid.select().index();
                 var selectedtd = grid.select();

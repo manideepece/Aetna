@@ -128,6 +128,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SecurityUIController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -150,6 +151,7 @@
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\jquery.multiselect.css" />
+    <Content Include="Content\Kendo\kendo.common.min.css" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -280,6 +282,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Kendo\kendo.all.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="test.sql" />
     <Content Include="Web.config" />
@@ -301,6 +304,8 @@
     <Content Include="Views\Home\RegionMaintenance.cshtml" />
     <Content Include="Views\Home\SubsegmentMaintenance.cshtml" />
     <Content Include="Views\Home\UserTeamMapping.cshtml" />
+    <Content Include="Views\Home\Region.cshtml" />
+    <Content Include="Views\Home\Subsegment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
