@@ -39,6 +39,103 @@ namespace Aetna.Controllers
             return View();
         }
 
+        public ActionResult Team()
+        {
+            return View();
+        }
+
+        public ActionResult GetTeamList()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetTeamMaintenanceData").Result;  // Blocking call!
+            var teams = new List<TeamMaintenance>();
+            if (response.IsSuccessStatusCode)
+            {
+                string res = response.Content.ReadAsStringAsync().Result;
+                teams = JsonConvert.DeserializeObject<List<TeamMaintenance>>(res);
+            }
+
+            return Json(teams, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateTeam(string teamId, string teamCode, string teamName, string controlCount, string reports, string regions, string subsegments)
+        {
+            TeamMaintenance team = new TeamMaintenance();
+            team.TeamMaintenanceID = teamId != "" ? Convert.ToInt32(teamId) : 0;
+            team.TeamCode = teamCode;
+            team.TeamName = teamName;
+            team.CtrlCnt = controlCount;
+            team.Reports = reports;
+            team.Region = regions;
+            team.Subsegment = subsegments;
+            team.ModifiedUser = "N376656" /*((UserProfile)Session["userProfile"]).aetnaId*/;
+            var myContent = JsonConvert.SerializeObject(team);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            // Add an Accept header for JSON format.    
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (string.IsNullOrEmpty(teamId))
+            {
+                HttpResponseMessage response = client.PostAsync("api/aetna/AddTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = response.Content.ReadAsStringAsync().Result;
+                }
+                return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                HttpResponseMessage response = client.PostAsync("api/aetna/EditTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var res = response.Content.ReadAsStringAsync().Result;
+                }
+                return Json("Updated Successfully", JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        public ActionResult DeleteTeam(string teamMaintenanceID)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(teamMaintenanceID);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/DeleteTeamMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = response.Content.ReadAsStringAsync();
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public async Task<ActionResult> TeamMaintenanceData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;

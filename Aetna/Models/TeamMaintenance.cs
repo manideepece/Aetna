@@ -14,6 +14,9 @@ namespace Aetna.Models
         public string Reports { get; set; }
         public string Region { get; set; }
         public string Subsegment { get; set; }
+        public string ReportIds { get; set; }
+        public string RegionIds { get; set; }
+        public string SubsegmentIds { get; set; }
         public string Column { get; set; }
         public string Value { get; set; }
         public string ModifiedUser { get; set; }

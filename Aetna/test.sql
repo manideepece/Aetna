@@ -614,7 +614,7 @@ begin
 		from #reports rep join BTTRPT_NAM_LB_N rpt on rep.Report_CD = rpt.Report_CD
 		where rpt.Report_CD not in (select distinct REPORT_CD from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId)
 
-		delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId and REPORT_CD not in (select * from #reports)
+		delete from BTT_SEC_TEAM_RPT_MAPPING_N where TEAM_ID = @teamId and REPORT_CD not in (select * from #reports) and @reports is not null
 		
 
 		  insert into BTT_SEC_TEAM_REG_SEG_MAPPING_N
@@ -627,6 +627,7 @@ begin
 
 		  delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId and REGION_SEGMENT_MAPPING_ID not in
 		  (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N rs join #regions reg on rs.REGION_ID = reg.REGION_ID )
+		  and @regions is not null
 
 
 
@@ -640,6 +641,7 @@ begin
 
 		 delete from BTT_SEC_TEAM_REG_SEG_MAPPING_N where TEAM_ID = @teamId and REGION_SEGMENT_MAPPING_ID not in
 		 (select REGION_SEGMENT_MAPPING_ID from BTT_SEC_REG_SEG_MAPPING_N rs join #subSegments seg on rs.SUB_SEGMENT_ID = seg.SUB_SEGMENT_ID )
+		 and @subsegments is not null
 
 		 drop table #reports
 		 drop table #regions

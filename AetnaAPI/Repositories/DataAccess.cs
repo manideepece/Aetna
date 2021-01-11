@@ -34,6 +34,9 @@ namespace AetnaAPI.Repositories
                         tmObj.Reports = Convert.ToString(reader["Reports"]);
                         tmObj.Region = Convert.ToString(reader["Region"]);
                         tmObj.Subsegment = Convert.ToString(reader["Subsegment"]);
+                        tmObj.ReportIds = Convert.ToString(reader["ReportIds"]);
+                        tmObj.RegionIds = Convert.ToString(reader["RegionIds"]);
+                        tmObj.SubsegmentIds = Convert.ToString(reader["SubsegmentIds"]);
                         output.Add(tmObj);
                     }
                     reader.NextResult();
