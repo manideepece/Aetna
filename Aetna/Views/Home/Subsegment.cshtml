@@ -133,6 +133,7 @@
                     mode: "row"
                 },
                 change: onSelectCell,
+                edit: onEdit,
                 navigatable: true,
                 selectable: true,
                 sortable: true,
@@ -281,6 +282,11 @@
                 $(selectedtr).eq(0).addClass("selectedRow");
                 $(selectedtr).eq(0).addClass("selected");
                 rowData = grid.dataItem(selectedtr);
+            }
+
+            function onEdit(arg) {
+                arg.container.find("input[name='SUB_SEGMENT_CD']").attr('maxlength', '5');
+                arg.container.find("input[name='SUB_SEGMENT_DESCR']").attr('maxlength', '30');
             }
         }
 
