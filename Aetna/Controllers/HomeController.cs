@@ -478,6 +478,127 @@ namespace Aetna.Controllers
             return View();
         }
 
+        public ActionResult UserTeam()
+        {
+            return View();
+        }
+
+        public ActionResult GetUserTeamList()
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5862/");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync("api/aetna/GetUserTeamMappingData").Result;  // Blocking call!
+            var teams = new List<UserTeamMapping>();
+            if (response.IsSuccessStatusCode)
+            {
+                string res = response.Content.ReadAsStringAsync().Result;
+                teams = JsonConvert.DeserializeObject<List<UserTeamMapping>>(res);
+            }
+
+            return Json(teams, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateUserTeam(string userId, string firstName, string lastName, string empStatus, string teams, string operation)
+        {
+            try
+            {
+                var utm = new UserTeamMapping();
+                utm.USER_ID = userId;
+                utm.FIRST_NAM = firstName;
+                utm.LAST_NAM = lastName;
+                utm.EMP_STS_CD = empStatus;
+                utm.TEAMS = teams;
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(utm);
+                    if (operation == "add")
+                    {
+                        HttpResponseMessage response = client.PostAsync("api/aetna/AddUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var output = response.Content.ReadAsStringAsync();
+                            return Json("Saved Successfully!", JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    else
+                    {
+                        HttpResponseMessage response = client.PostAsync("api/aetna/EditUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var output = response.Content.ReadAsStringAsync();
+                            return Json("Updated Successfully!", JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
+                        }
+                    }               
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult DeleteUserTeam(string userId)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://localhost:5862/");
+                    // Add an Accept header for JSON format.    
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var myContent = JsonConvert.SerializeObject(userId);
+                    HttpResponseMessage response = client.PostAsync("api/aetna/DeleteUserTeamMapping", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var output = response.Content.ReadAsStringAsync();
+                        return Json("Deleted Successfully!", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("An Error Occured!", JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public async Task<ActionResult> UserTeamMappingData(int page, int rows, bool _search, string searchField, string searchString)
         {
             int pageIndex = Convert.ToInt32(page) - 1;

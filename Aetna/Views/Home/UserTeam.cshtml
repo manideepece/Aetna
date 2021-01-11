@@ -1,0 +1,322 @@
+
+@{
+    ViewBag.Title = "Region";
+    Layout = "~/Views/Shared/_AetnaLayout.cshtml";
+}
+@using Newtonsoft.Json;
+
+<style>
+
+    .container {
+        color: black !important;
+
+    }
+
+    .table th, table td {
+        text-align: left;
+    }
+</style>
+
+<div id="example">
+    <div style="font-size:15px;text-align:center;margin-top:100px">
+        <span id="infocnt_custom" style="color:red;"></span>
+    </div>
+    <div id="grid">
+    </div>
+    <script>
+        var rowData = null;
+        var selectedRow = null;
+        var selectedTeams = null;
+        var updatedTeams = null;
+        $(document).ready(function () {
+            $("#lblTitle").text('User Team Mapping');
+            $.ajax({
+                type: "GET",
+                url: "/Home/GetUserTeamList",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    bindGrid(result);
+                }
+            });
+        });
+        function teamsEditor(container, options) {
+            selectedTeams = null;
+            $.ajax({
+                type: "GET",
+                url: "/Home/GetAllTeams",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var id = 'Teams_' + options.model.USER_ID;
+                    $("<input id='" + id + "'/>").appendTo(container);
+                    $("#" + id).kendoDropDownTree({
+                        placeholder: "Select ...",
+                        checkboxes: true,
+                        checkAll: true,
+                        autoClose: true,
+                        filter: "startswith",
+                        dataValueField: "TEAM_ID",
+                        dataTextField: "TEAM_DESCR",
+                        dataSource: result,
+                        change: function (e) {
+                            selectedTeams = this.value();
+                            updatedTeams = [];
+                            for (var i = 0; i < selectedTeams.length; i++) {
+                                jQuery.grep(result, function (obj) {
+                                    if (obj.TEAM_CD === selectedTeams[i]) {
+                                        updatedTeams.push(obj.TEAM_DESCR)
+                                    }
+                                });
+                            }
+                            console.log(updatedTeams);
+                        }
+                    });
+                    var selectedItems = options.model.TEAMS;
+                    var selectedIds = [];
+                    selectedItems = selectedItems.split(',');
+                    for (var i = 0; i < selectedItems.length; i++) {
+                        jQuery.grep(result, function (obj) {
+                            if (obj.TEAM_DESCR === selectedItems[i].replace('&amp;', '&')) {
+                                selectedIds.push(obj.TEAM_CD)
+                            }
+                        });
+                    }
+                    var dropdowntree = $("#" + id).data("kendoDropDownTree");
+                    dropdowntree.value(selectedIds);
+                    selectedTeams = selectedIds
+                }
+            });
+        }
+        function reloadGridData() {
+            $("#infocnt_custom").text('');
+            $.ajax({
+                type: "GET",
+                url: "/Home/GetUserTeamList",
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.destroy();
+                    $("#grid").empty();
+                    bindGrid(result);
+                }
+            });
+        }
+        function deleteItem(e) {
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            if (confirm('Are you sure you want to Remove : ' + dataItem.TeamMaintenanceID)) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Home/DeleteUserTeam",
+                    data: { userId: dataItem.USER_ID },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var grid = $("#grid").data("kendoGrid");
+                        reloadGridData()
+                        $("a.k-button.k-button-icontext.k-grid-Save").text("Save");
+                        $("#infocnt_custom").text(result);
+                    }
+                });
+
+            }
+        }
+        function bindGrid(gridData) {
+            var grid = $("#grid").kendoGrid({
+                dataSource: {
+                    data: gridData,
+                    schema: {
+                        model: {
+                            id: "USER_ID",
+                            fields: {
+                                USER_ID: { validation: { required: true } },
+                                LAST_NAM: { validation: { required: true } },
+                                FIRST_NAM: { validation: { required: true } },
+                                EMP_STS_CD: { validation: { required: true } },
+                                TEAMS: { validation: { required: true } },
+                                TeamIds: { editable: false, nullable: true },
+                            }
+                        }
+                    }
+                },
+                pageable: {
+                    pageSize: 20
+                },
+                filterable: {
+                    mode: "row"
+                },
+                change: onSelectCell,
+                navigatable: true,
+                selectable: true,
+                sortable: true,
+                filterMenuInit: false,
+                height: 550,
+
+                toolbar: [{
+                    name: 'new',
+                    text: "Add User Team",
+                }, {
+                    text: "Save",
+                }],
+                columns: [
+                    {
+                        field: "TeamMaintenanceID", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;"
+                        }, title: "Team Id", hidden: true
+                    },
+                    {
+                        field: "TeamCode", width: "10%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;;width:10%"
+                        }, title: "Team Code"
+                    },
+                    {
+                        field: "TeamName", width: "10%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;width:10%"
+                        }, title: "Team Name"
+                    },
+                    {
+                        field: "CtrlCnt", width: "10%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;width:10%;"
+                        }, title: "Control Count"
+                    },
+                    {
+                        field: "Reports", width: "25%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;width:25%;"
+                        }, title: "Reports", encoded: false,
+                        editor: reportsEditor
+                    },
+                    {
+                        field: "Region", width: "25%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;width:25%;"
+                        }, title: "Region",
+                        editor: regionsEditor
+                    },
+                    {
+                        field: "Subsegment", width: "25%", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;;width:25%"
+                        }, title: "Subsegment",
+                        editor: subsegmentsEditor
+                    },
+                    {
+                        field: "ReportIds", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;"
+                        }, title: "Report Ids", hidden: true
+                    },
+                    {
+                        field: "RegionIds", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;"
+                        }, title: "Region Ids", hidden: true
+                    },
+                    {
+                        field: "SubsegmentIds", headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center;font-weight: bold;"
+                        }, title: "Subsegment Ids", hidden: true
+                    },
+                    { command: { text: "Remove", click: deleteItem }, title: " ", width: "10%" }
+                ],
+                editable: "inline"
+            });
+
+            $(".k-grid-new").click(function (e) {
+                $("#infocnt_custom").text('');
+                var grid = $("#grid").data("kendoGrid");
+                grid.addRow();
+                $("#grid tbody tr").eq(0).addClass("selectedRow");
+                $("a.k-button.k-button-icontext.k-grid-Save").text("Save");
+                return false;
+
+            });
+            $("#grid tbody").on("dblclick", "td", function (e) {
+                $("#infocnt_custom").text('');
+                var cellElement = this;
+                var cell = $(cellElement);
+                var grid = $("#grid").getKendoGrid();
+                grid.editCell(cell);
+                $("a.k-button.k-button-icontext.k-grid-Save").text("Update");
+            });
+            $(".k-grid-Save").bind('click', function (e) {
+                $("#infocnt_custom").text('');
+                var grid = $("#grid").data("kendoGrid");
+                var dataItem = grid.dataItem($("#grid tbody tr.selectedRow"));
+                grid.saveRow();
+                if (dataItem.TeamCode != "" && dataItem.TeamName != "" && dataItem.CtrlCnt != "") {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Home/UpdateTeam",
+                        data: { teamId: dataItem.TeamMaintenanceID, teamCode: dataItem.TeamCode, teamName: dataItem.TeamName, controlCount: dataItem.CtrlCnt, reports: selectedReports != null ? selectedReports.join(',') : selectedReports, regions: selectedRegions != null ? selectedRegions.join(',') : selectedRegions, subsegments: selectedSubsegments != null ? selectedSubsegments.join(',') : selectedSubsegments },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (result) {
+                            reloadGridData();
+                            $("#infocnt_custom").text(result);
+                            selectedReports = null;
+                            selectedRegions = null;
+                            selectedSubsegments = null;
+                            selectedRow = null;
+                        }
+                    });
+                }
+            });
+
+            function onSelectCell(e) {
+                var grid = e.sender;
+                var cellIndex = grid.select().index();
+                var selectedtd = grid.select();
+                var selectedtr = grid.select().closest("tr");
+                console.log(e);
+
+                $(selectedtr).eq(0).siblings().removeClass("selectedRow");
+                $(selectedtr).eq(0).siblings().removeClass("selected");
+                $(selectedtr).eq(0).removeClass("k-state-selected");
+                $(selectedtr).eq(0).addClass("selectedRow");
+                $(selectedtr).eq(0).addClass("selected");
+                rowData = grid.dataItem(selectedtr);
+                if (selectedRow == null || selectedRow != rowData.TeamCode) {
+                    selectedRow = rowData.TeamCode;
+                    selectedReports = null;
+                    selectedRegions = null;
+                    selectedSubsegments = null;
+                    updatedReports = null;
+                    updatedRegions = null;
+                    updatedSubsegments = null;
+                }
+                if (selectedReports == null) {
+                    selectedReports = rowData.ReportIds.split(',');
+                }
+                if (selectedRegions == null) {
+                    selectedRegions = rowData.RegionIds.split(',');
+                }
+                if (selectedSubsegments == null) {
+                    selectedSubsegments = rowData.SubsegmentIds.split(',');
+                }
+                if (updatedReports == null) {
+                    updatedReports = rowData.Reports.replace('&amp;', '&').split(',');
+                }
+                if (updatedRegions == null) {
+                    updatedRegions = rowData.Region.split(',');
+                }
+                if (updatedSubsegments == null) {
+                    updatedSubsegments = rowData.Subsegment.split(',');
+                }
+                rowData.set("Reports", updatedReports.join(','));
+                rowData.set("Region", updatedRegions.join(','));
+                rowData.set("Subsegment", updatedSubsegments.join(','));
+            }
+        }
+    </script>
+</div>
+

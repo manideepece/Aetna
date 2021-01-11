@@ -16,6 +16,11 @@
         top: 100px;
     }
 
+    .k-tooltip-error{
+        background-color:white;
+        color: red;
+    }
+
     .table th, table td {
         text-align: left;
     }
@@ -48,12 +53,8 @@
                 dataType: "json",
                 success: function (result) {
                     var grid = $("#grid").data("kendoGrid");
-                    //var schema = grid.dataSource.options.schema
-                    //grid.dataSource.data(result);
-                    ////grid.dataSource.options.data = result;
-                    //grid.dataSource.options.schema = schema;
-                    //grid.refresh();
                     grid.destroy();
+                    $("#grid").empty();
                     bindGrid(result);
                 }
             });
@@ -70,10 +71,6 @@
                     success: function (result) {
                         alert(result);
                         var grid = $("#grid").data("kendoGrid");
-                        //grid.dataSource.remove(dataItem);
-                        //grid.dataSource.sync();
-                        ////grid.sync();
-                        //grid.refresh();
                         reloadGridData()
                         $("a.k-button.k-button-icontext.k-grid-Save").text("Save");
                     }
@@ -90,8 +87,32 @@
                             id: "SUB_SEGMENT_ID",
                             fields: {
                                 SUB_SEGMENT_ID: { type: "number", editable: false, nullable: true },
-                                SUB_SEGMENT_CD: { validation: { required: true } },
-                                SUB_SEGMENT_DESCR: { validation: { required: true } },
+                                SUB_SEGMENT_CD: {
+                                    validation: {
+                                        required: { message: "Subsegment Code is required" },
+                                        maxlength:
+                                            function (input) {
+                                                if (input.val().length > 5) {
+                                                    input.attr("data-maxlength-msg", "Subsegment Code cannot be more than 5 characters");
+                                                    return false;
+                                                }
+                                                return true;
+                                            }
+                                    }
+                                },
+                                SUB_SEGMENT_DESCR: {
+                                    validation: {
+                                        required: { message: "Subsegment Description is required" },
+                                        maxlength:
+                                            function (input) {
+                                                if (input.val().length > 30) {
+                                                    input.attr("data-maxlength-msg", "Subsegment Description cannot be more than 30 characters");
+                                                    return false;
+                                                }
+                                                return true;
+                                            }
+                                    }
+                                },
                                 CREAT_BY_ID: { editable: false, validation: { required: false } },
                                 CREAT_TMSTMP: {
                                     editable: false, type: "date", validation: { required: false }
@@ -113,12 +134,17 @@
                 filterMenuInit: false,
                 height: 550,
 
-                toolbar: [{
-                    name: 'new',
-                    text: "Add Subsegment",
-                }, {
-                    text: "Save",
-                }],
+                    toolbar: [{
+                        name: 'new',
+                        text: "Add Subsegment"
+                    },
+                    {
+                        text: "Save"
+                        },
+                        {
+                            text: "Refresh",
+                        }
+                ],
                 columns: [
                     {
                         field: "SUB_SEGMENT_ID", headerAttributes: {
@@ -130,13 +156,13 @@
                         field: "SUB_SEGMENT_CD", headerAttributes: {
                             "class": "table-header-cell",
                             style: "text-align: center;font-weight: bold;"
-                        }, title: "Subsegment Code"
+                        }, title: "Subsegment Code*"
                     },
                     {
                         field: "SUB_SEGMENT_DESCR", headerAttributes: {
                             "class": "table-header-cell",
                             style: "text-align: center;font-weight: bold;"
-                        }, title: "Subsegment Description"
+                        }, title: "Subsegment Description*"
                     },
                     {
                         field: "CREAT_BY_ID", headerAttributes: {
@@ -148,7 +174,7 @@
                         field: "CREAT_TMSTMP", headerAttributes: {
                             "class": "table-header-cell",
                             style: "text-align: center;font-weight: bold;"
-                        }, title: "Updated On", filterable: false, format: "{0: yyyy-MM-dd}"
+                        }, title: "Updated On", filterable: false, format: "{0: MM-dd-yyyy}"
                     },
                     { command: { text: "Remove", click: deleteItem }, title: " ", width: "180px" }
                 ],
@@ -156,6 +182,8 @@
             });
 
             $(".k-grid-new").click(function (e) {
+                $(this).attr('disabled', 'disabled');
+                $(".k-grid-Save").removeAttr("disabled");
                 var grid = $("#grid").data("kendoGrid");
                 grid.addRow();
                 $("#grid tbody tr").eq(0).addClass("selectedRow");
@@ -163,13 +191,19 @@
                 return false;
 
             });
+            $(".k-grid-Refresh").click(function (e) {
+                reloadGridData();
+            })
             $("#grid tbody").on("dblclick", "td", function (e) {
+                $(".k-grid-Save").removeAttr("disabled");
+                $(".k-grid-new").attr('disabled', 'disabled');
                 var cellElement = this;
                 var cell = $(cellElement);
                 var grid = $("#grid").getKendoGrid();
                 grid.editCell(cell);
                 $("a.k-button.k-button-icontext.k-grid-Save").text("Update");
             });
+            $(".k-grid-Save").attr("disabled", "disabled");
             $(".k-grid-Save").bind('click', function (e) {
                 var grid = $("#grid").data("kendoGrid");
                 var dataItem = grid.dataItem($("#grid tbody tr.selectedRow"));
@@ -185,7 +219,7 @@
                             alert(result);
                             //grid.dataSource.read();
                             //grid.sync();
-                            //grid.refresh(); 
+                            //grid.refresh();
                             reloadGridData();
                         }
                     });
@@ -200,7 +234,7 @@
 
                 $(selectedtr).eq(0).siblings().removeClass("selectedRow");
                 $(selectedtr).eq(0).siblings().removeClass("selected");
-                $(selectedtr).eq(0).removeClass("k-state-selected");  
+                $(selectedtr).eq(0).removeClass("k-state-selected");
                 $(selectedtr).eq(0).addClass("selectedRow");
                 $(selectedtr).eq(0).addClass("selected");
                 rowData = grid.dataItem(selectedtr);
