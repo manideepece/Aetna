@@ -60,12 +60,17 @@
             });
         }
         function deleteItem(e) {
-            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            if (confirm('Are you sure you want to Remove : ' + dataItem.SUB_SEGMENT_DESCR)) {
+            var subsegmentIds = [];
+            var grid = $("#grid").data("kendoGrid");
+            $('#grid input:checked.select-item').each(function () {
+                var dataItem = grid.dataItem($(this).closest('tr'));
+                subsegmentIds.push(dataItem.SUB_SEGMENT_ID);
+            })
+            if (confirm('Are you sure you want to delete selected rows? ')) {
                 $.ajax({
                     type: "GET",
                     url: "/Home/DeleteSubsegment",
-                    data: { subsegmentId: dataItem.SUB_SEGMENT_ID },
+                    data: { subsegmentId: subsegmentIds.join(',') },
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (result) {
@@ -143,9 +148,18 @@
                         },
                         {
                             text: "Refresh",
+                        },
+                        {
+                            text: "Delete",
                         }
                 ],
                 columns: [
+                    {
+                        field: "",
+                        title: "<input id='chkAll' class='checkAllCls' type='checkbox'/>",
+                        width: "5%", filterable: false,
+                        template: "<input type='checkbox' class='select-item' />"
+                    },
                     {
                         field: "SUB_SEGMENT_ID", headerAttributes: {
                             "class": "table-header-cell",
@@ -176,11 +190,38 @@
                             style: "text-align: center;font-weight: bold;"
                         }, title: "Updated On", filterable: false, format: "{0: MM-dd-yyyy}"
                     },
-                    { command: { text: "Remove", click: deleteItem }, title: " ", width: "180px" }
+                    //{ command: { text: "Remove", click: deleteItem }, title: " ", width: "180px" }
                 ],
                 editable: "inline"
             });
 
+            $(".k-grid-Delete").click(function (e) {
+                deleteItem();
+            })
+            $(".checkAllCls").on("click", function () {
+                var ele = this;
+                var state = $(ele).is(':checked');
+                var grid = $('#grid').data('kendoGrid');
+                if (state == true) {
+                    $('.select-item').prop('checked', true)
+                    $(".k-grid-Delete").removeAttr("disabled");
+                }
+                else {
+                    $('.select-item').prop('checked', false)
+                    $(".k-grid-Delete").attr('disabled', 'disabled');
+                }
+            });
+            $(".select-item").change(function () {
+                if ($(".select-item:checked").length > 0) {
+                    $(".k-grid-Delete").removeAttr("disabled");
+                }
+                else {
+                    $(".k-grid-Delete").attr('disabled', 'disabled');
+                }
+            })
+            $(".k-pager-nav,.k-pager-numbers-wrap").click(function () {
+                $(".checkAllCls").prop('checked', false);
+            });
             $(".k-grid-new").click(function (e) {
                 $(this).attr('disabled', 'disabled');
                 $(".k-grid-Save").removeAttr("disabled");
@@ -197,6 +238,7 @@
             $("#grid tbody").on("dblclick", "td", function (e) {
                 $(".k-grid-Save").removeAttr("disabled");
                 $(".k-grid-new").attr('disabled', 'disabled');
+                $(".k-grid-Delete").attr('disabled', 'disabled');
                 var cellElement = this;
                 var cell = $(cellElement);
                 var grid = $("#grid").getKendoGrid();
@@ -204,6 +246,7 @@
                 $("a.k-button.k-button-icontext.k-grid-Save").text("Update");
             });
             $(".k-grid-Save").attr("disabled", "disabled");
+            $(".k-grid-Delete").attr("disabled", "disabled");
             $(".k-grid-Save").bind('click', function (e) {
                 var grid = $("#grid").data("kendoGrid");
                 var dataItem = grid.dataItem($("#grid tbody tr.selectedRow"));
