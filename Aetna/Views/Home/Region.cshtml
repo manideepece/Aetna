@@ -12,6 +12,15 @@
 
     }
 
+    .k-grid {
+        top: 100px;
+    }
+
+    .k-tooltip-error {
+        background-color: white;
+        color: red;
+    }
+
     .table th, table td {
         text-align: left;
     }
@@ -164,7 +173,7 @@
                               var grid = $("#grid").data("kendoGrid");
                 var dataItem = grid.dataItem($("#grid tbody tr.selectedRow"));
                 grid.saveRow();
-                if (dataItem.REGION_CD != "" && dataItem.REGION_DESCR != "") {
+                if (!$(".k-tooltip-error").is(":visible") && dataItem.REGION_CD != "" && dataItem.REGION_DESCR != "") {
                     $.ajax({
                         type: "GET",
                         url: "/SecurityUI/UpdateRegion",

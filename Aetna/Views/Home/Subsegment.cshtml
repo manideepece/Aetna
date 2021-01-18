@@ -95,6 +95,14 @@
                                 SUB_SEGMENT_CD: {
                                     validation: {
                                         required: { message: "Subsegment Code is required" },
+                                        SUB_SEGMENT_CDValidation: function (input) {
+                                            if (input.is("[name='SUB_SEGMENT_CD']") && input.val() != "") {
+                                                input.attr("data-SUB_SEGMENT_CDvalidation-msg", "Subsegment Code should contain only alpha numeric values");
+                                                return /^[0-9a-zA-Z]+$/.test(input.val());
+                                            }
+
+                                            return true;
+                                        },
                                         maxlength:
                                             function (input) {
                                                 if (input.val().length > 5) {
@@ -108,6 +116,14 @@
                                 SUB_SEGMENT_DESCR: {
                                     validation: {
                                         required: { message: "Subsegment Description is required" },
+                                        SUB_SEGMENT_DESCRValidation: function (input) {
+                                            if (input.is("[name='SUB_SEGMENT_DESCR']") && input.val() != "") {
+                                                input.attr("data-SUB_SEGMENT_DESCRvalidation-msg", "Subsegment Description should contain only alpha numeric values");
+                                                return /^[0-9a-zA-Z]+$/.test(input.val());
+                                            }
+
+                                            return true;
+                                        },
                                         maxlength:
                                             function (input) {
                                                 if (input.val().length > 30) {
@@ -252,7 +268,7 @@
                 var grid = $("#grid").data("kendoGrid");
                 var dataItem = grid.dataItem($("#grid tbody tr.selectedRow"));
                 grid.saveRow();
-                if (dataItem.SUB_SEGMENT_CD != "" && dataItem.SUB_SEGMENT_DESCR != "") {
+                if (!$(".k-tooltip-error").is(":visible") && dataItem.SUB_SEGMENT_CD != "" && dataItem.SUB_SEGMENT_DESCR != "") {
                     $.ajax({
                         type: "GET",
                         url: "/Home/UpdateSubsegment",

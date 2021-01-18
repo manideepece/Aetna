@@ -258,11 +258,13 @@ namespace Aetna.Controllers
             // Add an Accept header for JSON format.    
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = client.PostAsync("api/aetna/EditRegionMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
+            string res = "";
             if (response.IsSuccessStatusCode)
             {
-                var res = response.Content.ReadAsStringAsync().Result;
+                res = response.Content.ReadAsStringAsync().Result;
             }
-            return Json(!string.IsNullOrEmpty(regionId) ? "Updated Successfully" : "Saved Successfully", JsonRequestBehavior.AllowGet);
+            //return Json(!string.IsNullOrEmpty(regionId) ? "Updated Successfully" : "Saved Successfully", JsonRequestBehavior.AllowGet);
+            return Json(res, JsonRequestBehavior.AllowGet);
         }
         public ActionResult DeleteRegion(string regionId)
         {
@@ -413,23 +415,24 @@ namespace Aetna.Controllers
             client.BaseAddress = new Uri("http://localhost:5862/");
             // Add an Accept header for JSON format.    
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string res = "";
             if(string.IsNullOrEmpty(subsegmentId))
             {
                 HttpResponseMessage response = client.PostAsync("api/aetna/AddSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    var res = response.Content.ReadAsStringAsync().Result;
+                    res = response.Content.ReadAsStringAsync().Result;
                 }
-                return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+                return Json(res, JsonRequestBehavior.AllowGet);
             }
             else
             {
                 HttpResponseMessage response = client.PostAsync("api/aetna/EditSubsegmentMaintenance", new StringContent(myContent, UnicodeEncoding.UTF8, "application/json")).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    var res = response.Content.ReadAsStringAsync().Result;
+                    res = response.Content.ReadAsStringAsync().Result;
                 }
-                return Json("Updated Successfully", JsonRequestBehavior.AllowGet);
+                return Json(res, JsonRequestBehavior.AllowGet);
             }
             
         }
